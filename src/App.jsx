@@ -1,29 +1,22 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-
-function Home() {
-  return <h1>Home Page</h1>;
-}
-
-function Login() {
-  return <h1>Login Page</h1>;
-}
-
-function Register() {
-  return <h1>Register Page</h1>;
-}
-
-function Dashboard() {
-  return <h1>Dashboard</h1>;
-}
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Dashboard from "./pages/Dashboard";
+import Workouts from "./pages/Workouts";
+import MyWorkouts from "./pages/MyWorkouts";
+import CreateWorkout from "./pages/CreateWorkout";
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Navigate to="/login" />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/workouts" element={<Workouts />} />
+        <Route path="/my-workouts" elemen={<MyWorkouts />} />
+        <Route path="/create-workout" elemen={<CreateWorkout />} />
       </Routes>
     </BrowserRouter>
   );
