@@ -1,0 +1,35 @@
+:root {
+  --bg: #09090b;
+  --card: rgba(24, 24, 27, 0.7);
+  --sidebar: rgba(15, 15, 18, 0.85);
+
+  --border: rgba(255, 255, 255, 0.08);
+
+  --text: #fafafa;
+  --muted: #a1a1aa;
+
+  --primary: #8b5cf6;
+  --primary-2: #6366f1;
+
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+
+  --radius: 24px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: Inter, sans-serif;
+  overflow-x: hidden;
+}
+
+button,
+input {
+  font: inherit;
+}

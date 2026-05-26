@@ -1,0 +1,306 @@
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  background: #09090b;
+  color: white;
+}
+
+/* SIDEBAR */
+
+.sidebar {
+  width: 270px;
+  background: rgba(15, 15, 20, 0.75);
+  backdrop-filter: blur(18px);
+
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+
+  display: flex;
+  flex-direction: column;
+
+  padding: 22px;
+
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  margin-bottom: 34px;
+}
+
+.brand-icon {
+  width: 42px;
+  height: 42px;
+
+  border-radius: 14px;
+
+  background: linear-gradient(135deg, #8b5cf6, #6366f1);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-shadow: 0 10px 30px rgba(139, 92, 246, 0.35);
+}
+
+.brand-icon.small {
+  width: 36px;
+  height: 36px;
+}
+
+.brand h2 {
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.brand span {
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: #8b8b95;
+}
+
+.sidebar-nav {
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 14px 16px;
+
+  border-radius: 18px;
+
+  text-decoration: none;
+
+  color: #8f9099;
+
+  transition: 0.25s;
+}
+
+.sidebar-link:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: white;
+}
+
+.sidebar-link.active {
+  background: linear-gradient(
+    135deg,
+    rgba(139, 92, 246, 0.2),
+    rgba(99, 102, 241, 0.12)
+  );
+
+  border: 1px solid rgba(139, 92, 246, 0.25);
+
+  color: white;
+
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+/* USER */
+
+.user-card {
+  margin-top: auto;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 14px;
+
+  border-radius: 20px;
+
+  background: rgba(255, 255, 255, 0.04);
+
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.avatar {
+  width: 42px;
+  height: 42px;
+
+  border-radius: 50%;
+
+  background: linear-gradient(135deg, #8b5cf6, #6366f1);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.user-info {
+  flex: 1;
+}
+
+.user-info h4 {
+  font-size: 14px;
+}
+
+.user-info span {
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: #8f9099;
+}
+
+.logout-btn {
+  background: transparent;
+  border: none;
+  color: #8f9099;
+  cursor: pointer;
+}
+
+/* MAIN */
+
+.main-layout {
+  flex: 1;
+  min-width: 0;
+}
+
+.page-content {
+  padding: 42px;
+}
+
+/* MOBILE */
+
+.mobile-header {
+  display: none;
+}
+
+.bottom-nav {
+  display: none;
+}
+
+.mobile-overlay {
+  display: none;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 992px) {
+  .sidebar {
+    display: none;
+  }
+
+  .mobile-header {
+    height: 72px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 20px;
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+
+    backdrop-filter: blur(18px);
+
+    position: sticky;
+    top: 0;
+
+    z-index: 20;
+  }
+
+  .mobile-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .mobile-menu-btn {
+    background: transparent;
+    border: none;
+    color: white;
+  }
+
+  .page-content {
+    padding: 24px;
+    padding-bottom: 110px;
+  }
+
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    height: 76px;
+
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+
+    background: rgba(15, 15, 20, 0.92);
+
+    backdrop-filter: blur(18px);
+
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+
+    z-index: 50;
+  }
+
+  .bottom-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    gap: 5px;
+
+    color: #8f9099;
+
+    text-decoration: none;
+
+    font-size: 11px;
+  }
+
+  .bottom-link.active {
+    color: white;
+  }
+
+  .mobile-overlay {
+    display: block;
+
+    position: fixed;
+    inset: 0;
+
+    background: rgba(0, 0, 0, 0.65);
+
+    z-index: 100;
+  }
+
+  .mobile-sidebar {
+    width: 280px;
+    height: 100%;
+
+    background: #111115;
+
+    padding: 22px;
+
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .mobile-sidebar-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 30px;
+  }
+
+  .mobile-sidebar-top button {
+    background: transparent;
+    border: none;
+    color: white;
+  }
+}
