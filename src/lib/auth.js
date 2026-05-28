@@ -1,11 +1,19 @@
-export const getUser = () => {
-  return JSON.parse(localStorage.getItem("user"));
-};
+import { useState } from "react";
 
-export const setUser = (user) => {
+export function useAuth() {
+  const [user] = useState(() => {
+    const stored = localStorage.getItem("user");
+
+    return stored ? JSON.parse(stored) : null;
+  });
+
+  return { user };
+}
+
+export function setAuth(user) {
   localStorage.setItem("user", JSON.stringify(user));
-};
+}
 
-export const logout = () => {
+export function clearAuth() {
   localStorage.removeItem("user");
-};
+}

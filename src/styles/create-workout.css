@@ -1,0 +1,240 @@
+/* =========================
+   PAGE WRAPPER
+========================= */
+
+.create-page {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+
+  color: var(--text);
+}
+
+.create-container {
+  width: 100%;
+  max-width: 850px;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.create-header {
+  text-align: center;
+  margin-bottom: 36px;
+}
+
+.create-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 8px 14px;
+  border-radius: 999px;
+
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.03);
+
+  color: var(--muted);
+  font-size: 12px;
+
+  margin-bottom: 18px;
+}
+
+.create-badge svg {
+  color: var(--primary);
+}
+
+.create-header h1 {
+  margin: 0;
+  font-size: 42px;
+  font-weight: 700;
+  letter-spacing: -0.6px;
+
+  color: var(--text);
+}
+
+.create-header p {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+/* =========================
+   CARD
+========================= */
+
+.create-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+
+  backdrop-filter: blur(18px);
+
+  border-radius: var(--radius);
+
+  padding: 36px;
+
+  box-shadow: var(--shadow);
+
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* =========================
+   FORM
+========================= */
+
+.cw-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cw-group label {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+/* inputs */
+.cw-group input,
+.cw-group textarea {
+  width: 100%;
+
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.03);
+
+  border-radius: 16px;
+
+  color: var(--text);
+
+  padding: 16px;
+
+  font-size: 15px;
+
+  outline: none;
+
+  transition: 0.2s ease;
+}
+
+.cw-group input {
+  height: 54px;
+}
+
+.cw-group textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+/* focus */
+.cw-group input:focus,
+.cw-group textarea:focus {
+  border-color: rgba(139, 92, 246, 0.5);
+  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15);
+}
+
+/* =========================
+   TAGS SELECTED
+========================= */
+
+.selected-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.selected-tag {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  background: rgba(139, 92, 246, 0.12);
+  border: 1px solid rgba(139, 92, 246, 0.25);
+
+  color: var(--primary);
+
+  border-radius: 999px;
+
+  padding: 8px 12px;
+
+  font-size: 13px;
+}
+
+.selected-tag button {
+  border: none;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+/* =========================
+   TAG SUGGESTIONS
+========================= */
+
+.suggested-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+
+  margin-top: 10px;
+}
+
+.suggested-tag {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  border: 1px solid var(--border);
+
+  border-radius: 999px;
+
+  background: rgba(255, 255, 255, 0.03);
+
+  color: var(--muted);
+
+  padding: 8px 14px;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+.suggested-tag:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text);
+  border-color: rgba(139, 92, 246, 0.25);
+}
+
+/* =========================
+   ACTIONS
+========================= */
+
+.cw-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 14px;
+
+  margin-top: 10px;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 768px) {
+  .create-header h1 {
+    font-size: 32px;
+  }
+
+  .create-card {
+    padding: 24px;
+  }
+
+  .cw-actions {
+    flex-direction: column;
+  }
+
+  .cw-actions button {
+    width: 100%;
+  }
+}
