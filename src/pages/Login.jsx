@@ -2,24 +2,40 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Dumbbell, ArrowRight } from "lucide-react";
 
+import { loginRequest } from "../api/authApi";
+import { useAuth } from "../context/AuthContext";
+
 import "../styles/auth.css";
 
 export default function Login() {
   const navigate = useNavigate();
+  const { login } = useAuth(); // 🔥 IMPORTANT
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("USER");
   const [loading, setLoading] = useState(false);
 
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault();
-
     setLoading(true);
 
-    setTimeout(() => {
+    try {
+      const res = await loginRequest({
+        email,
+        password,
+      });
+
+      console.log("LOGIN RESPONSE:", res);
+
+      login(res); // 🔥 SALVEAZĂ TOKEN + /me
+
       navigate("/dashboard");
-    }, 600);
+    } catch (err) {
+      console.log("LOGIN ERROR:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -28,30 +44,24 @@ export default function Login() {
       <div className="auth-glow auth-glow-2"></div>
 
       <div className="auth-wrapper">
-        {/* LOGO */}
         <div className="auth-logo">
           <div className="auth-logo-icon">
             <Dumbbell size={20} />
           </div>
-
           <span>Nexus Fit</span>
         </div>
 
-        {/* CARD */}
         <div className="auth-card">
           <div className="auth-header">
             <h1>Welcome back</h1>
-
             <p>Sign in to your fitness intelligence dashboard.</p>
           </div>
 
           <form onSubmit={submit} className="auth-form">
             <div className="form-group">
               <label>Email</label>
-
               <input
                 type="email"
-                placeholder="you@nexus.fit"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
@@ -59,16 +69,13 @@ export default function Login() {
 
             <div className="form-group">
               <label>Password</label>
-
               <input
                 type="password"
-                placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
 
-            {/* ROLE */}
             <div className="form-group">
               <label>Continue as</label>
 
@@ -95,7 +102,6 @@ export default function Login() {
 
             <button type="submit" className="submit-btn" disabled={loading}>
               {loading ? "Signing in..." : "Continue"}
-
               <ArrowRight size={18} />
             </button>
           </form>

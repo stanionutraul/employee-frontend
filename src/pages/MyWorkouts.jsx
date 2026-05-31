@@ -1,6 +1,4 @@
-import { CheckCircle2, CalendarClock } from "lucide-react";
-
-import { myWorkouts } from "../lib/mockData";
+import { CalendarClock } from "lucide-react";
 
 import "../styles/myWorkouts.css";
 
@@ -17,44 +15,28 @@ export default function MyWorkoutsPage() {
         <div className="timeline-line" />
 
         <div className="timeline-list">
-          {myWorkouts.map((m) => {
-            const completed = m.status === "completed";
+          <div className="timeline-item">
+            <div className="timeline-icon upcoming-icon">
+              <CalendarClock size={18} />
+            </div>
 
-            return (
-              <div key={m.id} className="timeline-item">
-                <div
-                  className={`timeline-icon ${
-                    completed ? "completed-icon" : "upcoming-icon"
-                  }`}
-                >
-                  {completed ? (
-                    <CheckCircle2 size={18} />
-                  ) : (
-                    <CalendarClock size={18} />
-                  )}
+            <div className="timeline-card">
+              <div className="timeline-card-top">
+                <div>
+                  <h3>No workouts yet</h3>
+
+                  <p>
+                    Your assigned workouts will appear here once the
+                    user-workouts API is connected.
+                  </p>
                 </div>
 
-                <div className="timeline-card">
-                  <div className="timeline-card-top">
-                    <div>
-                      <h3>{m.title}</h3>
-                      <p>{m.date}</p>
-                    </div>
-
-                    <span
-                      className={`timeline-status ${
-                        completed
-                          ? "timeline-status-completed"
-                          : "timeline-status-upcoming"
-                      }`}
-                    >
-                      {completed ? "Completed" : "Upcoming"}
-                    </span>
-                  </div>
-                </div>
+                <span className="timeline-status timeline-status-upcoming">
+                  Empty
+                </span>
               </div>
-            );
-          })}
+            </div>
+          </div>
         </div>
       </div>
     </div>

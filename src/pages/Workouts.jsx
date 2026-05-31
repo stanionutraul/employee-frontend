@@ -1,26 +1,52 @@
 import { useEffect, useState } from "react";
-import { Clock, Search, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../lib/auth";
-import { workouts } from "../lib/mockData";
+import { Clock, Search, Plus } from "lucide-react";
+
+import { useAuth } from "../context/AuthContext";
+import { getAllWorkouts } from "../api/workoutApi";
+
 import "../styles/workouts.css";
 
 export default function Workouts() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
+  const [workouts, setWorkouts] = useState([]);
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
+  // =========================
+  // LOAD WORKOUTS FROM API
+  // =========================
   useEffect(() => {
-    const t = setTimeout(() => setLoading(false), 500);
-    return () => clearTimeout(t);
+    const fetchWorkouts = async () => {
+      try {
+        setLoading(true);
+        const data = await getAllWorkouts();
+        setWorkouts(data);
+        // eslint-disable-next-line no-unused-vars
+      } catch (err) {
+        setError("Failed to load workouts");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchWorkouts();
   }, []);
 
+  // =========================
+  // WAIT FOR AUTH
+  // =========================
+  if (authLoading) return <p>Loading user...</p>;
+  if (!user) return <p>Please login</p>;
+
+  // =========================
+  // FILTER
+  // =========================
   const filtered = workouts.filter((w) =>
-    (w.title + w.description + w.tags.join(" "))
-      .toLowerCase()
-      .includes(query.toLowerCase()),
+    `${w.name} ${w.description}`.toLowerCase().includes(query.toLowerCase()),
   );
 
   return (
@@ -30,19 +56,20 @@ export default function Workouts() {
         <div>
           <h1>Workouts</h1>
           <p>
-            {user?.role === "TRAINER"
+            {user.role === "TRAINER"
               ? "Manage your training programs."
-              : "Browse and join curated sessions."}
+              : "Browse available workouts."}
           </p>
         </div>
 
-        {user?.role === "TRAINER" && (
+        {/* ONLY TRAINER CAN CREATE */}
+        {user.role === "TRAINER" && (
           <button
             className="primary-btn"
             onClick={() => navigate("/create-workout")}
           >
             <Plus size={16} />
-            New workout
+            Create Workout
           </button>
         )}
       </div>
@@ -57,7 +84,10 @@ export default function Workouts() {
         />
       </div>
 
-      {/* CONTENT */}
+      {/* ERROR */}
+      {error && <p className="error">{error}</p>}
+
+      {/* LOADING */}
       {loading ? (
         <div className="grid">
           {Array.from({ length: 6 }).map((_, i) => (
@@ -65,7 +95,7 @@ export default function Workouts() {
           ))}
         </div>
       ) : filtered.length === 0 ? (
-        <EmptyState query={query} />
+        <p>No workouts found</p>
       ) : (
         <div className="grid">
           {filtered.map((w) => (
@@ -73,27 +103,19 @@ export default function Workouts() {
               <div className="card-top">
                 <span className="pill">
                   <Clock size={12} />
-                  {w.duration}
+                  {w.duration ?? "—"}
                 </span>
 
-                <span className="muted">by {w.trainer}</span>
+                <span className="muted">by {w.trainerName ?? "Unknown"}</span>
               </div>
 
-              <h3>{w.title}</h3>
+              <h3>{w.name}</h3>
               <p className="muted">{w.description}</p>
-
-              <div className="tags">
-                {w.tags.map((t) => (
-                  <span key={t} className="tag">
-                    {t}
-                  </span>
-                ))}
-              </div>
 
               <div className="card-actions">
                 <button
                   className="ghost-btn"
-                  onClick={() => alert("Details: " + w.title)}
+                  onClick={() => alert("Details: " + w.name)}
                 >
                   Details
                 </button>
@@ -101,28 +123,18 @@ export default function Workouts() {
                 <button
                   className="primary-btn"
                   onClick={() =>
-                    user?.role === "TRAINER"
-                      ? alert("Manage: " + w.title)
-                      : alert("Joined: " + w.title)
+                    user.role === "TRAINER"
+                      ? alert("Manage: " + w.name)
+                      : alert("Joined: " + w.name)
                   }
                 >
-                  {user?.role === "TRAINER" ? "Manage" : "Join"}
+                  {user.role === "TRAINER" ? "Manage" : "Join"}
                 </button>
               </div>
             </div>
           ))}
         </div>
       )}
-    </div>
-  );
-}
-
-function EmptyState({ query }) {
-  return (
-    <div className="empty">
-      <Search size={20} />
-      <h3>No workouts found</h3>
-      <p>Nothing matches "{query}". Try another keyword.</p>
     </div>
   );
 }
