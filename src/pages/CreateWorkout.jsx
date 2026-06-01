@@ -1,59 +1,57 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { X, Plus, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
+
+import { useAuth } from "../context/AuthContext";
+import { createWorkout } from "../api/workoutApi";
 
 import "../styles/create-workout.css";
-
-const SUGGESTED = [
-  "Strength",
-  "Cardio",
-  "Hypertrophy",
-  "Mobility",
-  "Power",
-  "Core",
-  "Endurance",
-];
 
 export default function CreateWorkout() {
   const navigate = useNavigate();
 
+  const { user } = useAuth();
+
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [duration, setDuration] = useState("45");
-
-  const [tags, setTags] = useState(["Strength"]);
 
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
-  const toggleTag = (tag) => {
-    if (tags.includes(tag)) {
-      setTags(tags.filter((t) => t !== tag));
-    } else {
-      setTags([...tags, tag]);
-    }
-  };
-
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault();
 
-    setSubmitting(true);
+    if (!name.trim()) {
+      setError("Workout name is required");
+      return;
+    }
 
-    setTimeout(() => {
-      setSubmitting(false);
+    try {
+      setSubmitting(true);
+      setError("");
+
+      await createWorkout({
+        name,
+        description,
+        trainerId: user.id,
+      });
 
       navigate("/workouts");
-    }, 700);
+    } catch (err) {
+      console.error(err);
+      setError("Failed to create workout");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
     <div className="create-page">
       <div className="create-container">
-        {/* HEADER */}
         <div className="create-header">
           <div className="create-badge">
             <Sparkles size={14} />
-
             <span>New program</span>
           </div>
 
@@ -62,20 +60,17 @@ export default function CreateWorkout() {
           <p>Design a new training session for your members.</p>
         </div>
 
-        {/* FORM */}
         <form className="create-card" onSubmit={submit}>
-          {/* NAME */}
           <div className="cw-group">
             <label>Workout name</label>
 
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. Push Strength Fundamentals"
+              placeholder="e.g. Push Day"
             />
           </div>
 
-          {/* DESCRIPTION */}
           <div className="cw-group">
             <label>Description</label>
 
@@ -83,55 +78,21 @@ export default function CreateWorkout() {
               rows={4}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="What is this session about? Who is it for?"
+              placeholder="Describe the workout..."
             />
           </div>
 
-          {/* DURATION */}
-          <div className="cw-group">
-            <label>Duration (minutes)</label>
+          {error && (
+            <p
+              style={{
+                color: "#ff6b6b",
+                marginTop: "10px",
+              }}
+            >
+              {error}
+            </p>
+          )}
 
-            <input
-              type="number"
-              min={5}
-              value={duration}
-              onChange={(e) => setDuration(e.target.value)}
-            />
-          </div>
-
-          {/* TAGS */}
-          <div className="cw-group">
-            <label>Tags</label>
-
-            <div className="selected-tags">
-              {tags.map((tag) => (
-                <div key={tag} className="selected-tag">
-                  <span>{tag}</span>
-
-                  <button type="button" onClick={() => toggleTag(tag)}>
-                    <X size={12} />
-                  </button>
-                </div>
-              ))}
-            </div>
-
-            <div className="suggested-tags">
-              {SUGGESTED.filter((s) => !tags.includes(s)).map((tag) => (
-                <button
-                  key={tag}
-                  type="button"
-                  className="suggested-tag"
-                  onClick={() => toggleTag(tag)}
-                >
-                  <Plus size={12} />
-
-                  {tag}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* ACTIONS */}
           <div className="cw-actions">
             <button
               type="button"

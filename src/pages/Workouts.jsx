@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Clock, Search, Plus } from "lucide-react";
 
 import { useAuth } from "../context/AuthContext";
-import { getAllWorkouts } from "../api/workoutApi";
+import api from "../api/axios";
 
 import "../styles/workouts.css";
 
@@ -16,15 +16,16 @@ export default function Workouts() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // =========================
-  // LOAD WORKOUTS FROM API
-  // =========================
+  const [editing, setEditing] = useState(null);
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+
+  // LOAD
   useEffect(() => {
-    const fetchWorkouts = async () => {
+    const fetch = async () => {
       try {
-        setLoading(true);
-        const data = await getAllWorkouts();
-        setWorkouts(data);
+        const res = await api.get("/workouts");
+        setWorkouts(res.data);
         // eslint-disable-next-line no-unused-vars
       } catch (err) {
         setError("Failed to load workouts");
@@ -33,49 +34,77 @@ export default function Workouts() {
       }
     };
 
-    fetchWorkouts();
+    fetch();
   }, []);
 
-  // =========================
-  // WAIT FOR AUTH
-  // =========================
-  if (authLoading) return <p>Loading user...</p>;
-  if (!user) return <p>Please login</p>;
+  if (authLoading) return <p className="muted">Loading user...</p>;
+  if (!user) return <p className="muted">Please login</p>;
 
-  // =========================
-  // FILTER
-  // =========================
   const filtered = workouts.filter((w) =>
     `${w.name} ${w.description}`.toLowerCase().includes(query.toLowerCase()),
   );
 
+  // DELETE
+  const remove = async (id) => {
+    try {
+      await api.delete(`/workouts/${id}`);
+      setWorkouts((p) => p.filter((w) => w.id !== id));
+    } catch {
+      setError("Delete failed");
+    }
+  };
+
+  // OPEN EDIT
+  const openEdit = (w) => {
+    setEditing(w);
+    setName(w.name);
+    setDescription(w.description);
+  };
+
+  // SAVE EDIT
+  const saveEdit = async () => {
+    try {
+      const res = await api.put(`/workouts/${editing.id}`, {
+        name,
+        description,
+      });
+
+      setWorkouts((prev) =>
+        prev.map((w) => (w.id === editing.id ? res.data : w)),
+      );
+
+      setEditing(null);
+    } catch {
+      setError("Update failed");
+    }
+  };
+
   return (
     <div className="page">
       {/* HEADER */}
-      <div className="page-header">
+      <div className="header">
         <div>
           <h1>Workouts</h1>
-          <p>
+          <p className="muted">
             {user.role === "TRAINER"
-              ? "Manage your training programs."
-              : "Browse available workouts."}
+              ? "Manage your training programs"
+              : "Browse workouts and join sessions"}
           </p>
         </div>
 
-        {/* ONLY TRAINER CAN CREATE */}
         {user.role === "TRAINER" && (
           <button
-            className="primary-btn"
+            className="btn primary"
             onClick={() => navigate("/create-workout")}
           >
             <Plus size={16} />
-            Create Workout
+            New workout
           </button>
         )}
       </div>
 
       {/* SEARCH */}
-      <div className="search-box">
+      <div className="search">
         <Search size={16} />
         <input
           value={query}
@@ -84,55 +113,74 @@ export default function Workouts() {
         />
       </div>
 
-      {/* ERROR */}
       {error && <p className="error">{error}</p>}
 
-      {/* LOADING */}
+      {/* GRID */}
       {loading ? (
         <div className="grid">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="card skeleton" />
+            <div key={i} className="skeleton" />
           ))}
         </div>
       ) : filtered.length === 0 ? (
-        <p>No workouts found</p>
+        <p className="muted">No workouts found</p>
       ) : (
         <div className="grid">
           {filtered.map((w) => (
-            <div key={w.id} className="card workout-card">
-              <div className="card-top">
+            <div key={w.id} className="card">
+              <div className="top">
                 <span className="pill">
                   <Clock size={12} />
                   {w.duration ?? "—"}
                 </span>
 
-                <span className="muted">by {w.trainerName ?? "Unknown"}</span>
+                <span className="muted">by {w.trainerName ?? "—"}</span>
               </div>
 
               <h3>{w.name}</h3>
               <p className="muted">{w.description}</p>
 
-              <div className="card-actions">
-                <button
-                  className="ghost-btn"
-                  onClick={() => alert("Details: " + w.name)}
-                >
-                  Details
-                </button>
-
-                <button
-                  className="primary-btn"
-                  onClick={() =>
-                    user.role === "TRAINER"
-                      ? alert("Manage: " + w.name)
-                      : alert("Joined: " + w.name)
-                  }
-                >
-                  {user.role === "TRAINER" ? "Manage" : "Join"}
-                </button>
+              <div className="actions">
+                {user.role === "TRAINER" ? (
+                  <>
+                    <button className="btn ghost" onClick={() => openEdit(w)}>
+                      Manage
+                    </button>
+                    <button className="btn danger" onClick={() => remove(w.id)}>
+                      Delete
+                    </button>
+                  </>
+                ) : (
+                  <button className="btn primary">Join</button>
+                )}
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* MODAL */}
+      {editing && (
+        <div className="modal">
+          <div className="modal-content">
+            <h2>Edit workout</h2>
+
+            <input value={name} onChange={(e) => setName(e.target.value)} />
+
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
+
+            <div className="modal-actions">
+              <button className="btn ghost" onClick={() => setEditing(null)}>
+                Cancel
+              </button>
+              <button className="btn primary" onClick={saveEdit}>
+                Save
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
