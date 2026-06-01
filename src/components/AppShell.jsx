@@ -10,41 +10,50 @@ import {
 } from "lucide-react";
 
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 import "../styles/app.css";
 
-const nav = [
-  {
-    to: "/dashboard",
-    label: "Dashboard",
-    icon: LayoutDashboard,
-  },
-  {
-    to: "/workouts",
-    label: "Workouts",
-    icon: Dumbbell,
-  },
-  {
-    to: "/my-workouts",
-    label: "My Workouts",
-    icon: CalendarCheck,
-  },
-  {
-    to: "/create-workout",
-    label: "Create Workout",
-    icon: PlusCircle,
-  },
-];
-
 export default function AppShell() {
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const { user, logout } = useAuth();
 
   const location = useLocation();
   const navigate = useNavigate();
 
   const path = location.pathname;
 
-  const logout = () => {
+  const nav = [
+    {
+      to: "/dashboard",
+      label: "Dashboard",
+      icon: LayoutDashboard,
+    },
+    {
+      to: "/workouts",
+      label: "Workouts",
+      icon: Dumbbell,
+    },
+    {
+      to: "/my-workouts",
+      label: "My Workouts",
+      icon: CalendarCheck,
+    },
+
+    ...(user?.role === "TRAINER"
+      ? [
+          {
+            to: "/create-workout",
+            label: "Create Workout",
+            icon: PlusCircle,
+          },
+        ]
+      : []),
+  ];
+
+  const handleLogout = () => {
+    logout();
     navigate("/login");
   };
 
@@ -81,14 +90,20 @@ export default function AppShell() {
         </nav>
 
         <div className="user-card">
-          <div className="avatar">IO</div>
-
-          <div className="user-info">
-            <h4>Ionut</h4>
-            <span>TRAINER</span>
+          <div className="avatar">
+            {user?.name
+              ?.split(" ")
+              .map((n) => n[0])
+              .join("")
+              .slice(0, 2)}
           </div>
 
-          <button onClick={logout} className="logout-btn">
+          <div className="user-info">
+            <h4>{user?.name}</h4>
+            <span>{user?.role}</span>
+          </div>
+
+          <button onClick={handleLogout} className="logout-btn">
             <LogOut size={16} />
           </button>
         </div>
@@ -96,7 +111,6 @@ export default function AppShell() {
 
       {/* MAIN */}
       <div className="main-layout">
-        {/* MOBILE HEADER */}
         <header className="mobile-header">
           <button
             className="mobile-menu-btn"
@@ -114,12 +128,10 @@ export default function AppShell() {
           </div>
         </header>
 
-        {/* CONTENT */}
         <main className="page-content">
           <Outlet />
         </main>
 
-        {/* MOBILE BOTTOM NAV */}
         <nav className="bottom-nav">
           {nav.map((item) => {
             const Icon = item.icon;
@@ -138,7 +150,6 @@ export default function AppShell() {
         </nav>
       </div>
 
-      {/* MOBILE DRAWER */}
       {mobileOpen && (
         <div className="mobile-overlay" onClick={() => setMobileOpen(false)}>
           <aside

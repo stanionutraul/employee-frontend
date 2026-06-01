@@ -13,7 +13,6 @@ export default function Login() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("USER");
   const [loading, setLoading] = useState(false);
 
   const submit = async (e) => {
@@ -78,26 +77,6 @@ export default function Login() {
 
             <div className="form-group">
               <label>Continue as</label>
-
-              <div className="role-grid">
-                <button
-                  type="button"
-                  className={role === "USER" ? "role-btn active" : "role-btn"}
-                  onClick={() => setRole("USER")}
-                >
-                  Member
-                </button>
-
-                <button
-                  type="button"
-                  className={
-                    role === "TRAINER" ? "role-btn active" : "role-btn"
-                  }
-                  onClick={() => setRole("TRAINER")}
-                >
-                  Trainer
-                </button>
-              </div>
             </div>
 
             <button type="submit" className="submit-btn" disabled={loading}>

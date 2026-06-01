@@ -10,6 +10,8 @@ import {
   Check,
 } from "lucide-react";
 
+import { registerRequest } from "../api/authApi";
+
 import "../styles/auth.css";
 
 export default function Register() {
@@ -23,8 +25,28 @@ export default function Register() {
 
   const [role, setRole] = useState("USER");
 
-  const finish = () => {
-    navigate("/dashboard");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const finish = async () => {
+    try {
+      setLoading(true);
+      setError("");
+
+      await registerRequest({
+        name,
+        email,
+        password,
+        role,
+      });
+
+      navigate("/login");
+    } catch (err) {
+      console.error(err);
+      setError("Failed to create account");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -33,7 +55,6 @@ export default function Register() {
       <div className="auth-glow auth-glow-2"></div>
 
       <div className="auth-wrapper">
-        {/* LOGO */}
         <div className="auth-logo">
           <div className="auth-logo-icon">
             <Dumbbell size={20} />
@@ -43,7 +64,6 @@ export default function Register() {
         </div>
 
         <div className="auth-card">
-          {/* PROGRESS */}
           <div className="progress-wrapper">
             <div className="progress-top">
               <span className={step >= 1 ? "active" : ""}>Your info</span>
@@ -63,7 +83,6 @@ export default function Register() {
             </div>
           </div>
 
-          {/* STEP 1 */}
           {step === 1 && (
             <div className="step-content">
               <div className="auth-header">
@@ -111,7 +130,6 @@ export default function Register() {
             </div>
           )}
 
-          {/* STEP 2 */}
           {step === 2 && (
             <div className="step-content">
               <div className="auth-header">
@@ -158,14 +176,29 @@ export default function Register() {
                 </button>
               </div>
 
+              {error && (
+                <p
+                  style={{
+                    color: "red",
+                    marginTop: "12px",
+                  }}
+                >
+                  {error}
+                </p>
+              )}
+
               <div className="register-actions">
                 <button className="secondary-btn" onClick={() => setStep(1)}>
                   <ArrowLeft size={18} />
                   Back
                 </button>
 
-                <button className="submit-btn" onClick={finish}>
-                  Create account
+                <button
+                  className="submit-btn"
+                  onClick={finish}
+                  disabled={loading}
+                >
+                  {loading ? "Creating..." : "Create account"}
                 </button>
               </div>
             </div>
