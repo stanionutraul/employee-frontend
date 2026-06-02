@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Clock, Search, Plus } from "lucide-react";
 
 import { useAuth } from "../context/AuthContext";
+import ScheduleModal from "./ScheduleModal";
 import api from "../api/axios";
 
 import "../styles/workouts.css";
@@ -20,14 +21,21 @@ export default function Workouts() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
 
-  // LOAD
+  // =========================
+  // SCHEDULE MODAL STATE
+  // =========================
+  const [scheduleOpen, setScheduleOpen] = useState(false);
+  const [selectedWorkout, setSelectedWorkout] = useState(null);
+
+  // =========================
+  // LOAD WORKOUTS
+  // =========================
   useEffect(() => {
     const fetch = async () => {
       try {
         const res = await api.get("/workouts");
         setWorkouts(res.data);
-        // eslint-disable-next-line no-unused-vars
-      } catch (err) {
+      } catch {
         setError("Failed to load workouts");
       } finally {
         setLoading(false);
@@ -44,7 +52,9 @@ export default function Workouts() {
     `${w.name} ${w.description}`.toLowerCase().includes(query.toLowerCase()),
   );
 
+  // =========================
   // DELETE
+  // =========================
   const remove = async (id) => {
     try {
       await api.delete(`/workouts/${id}`);
@@ -54,14 +64,15 @@ export default function Workouts() {
     }
   };
 
-  // OPEN EDIT
+  // =========================
+  // EDIT
+  // =========================
   const openEdit = (w) => {
     setEditing(w);
     setName(w.name);
     setDescription(w.description);
   };
 
-  // SAVE EDIT
   const saveEdit = async () => {
     try {
       const res = await api.put(`/workouts/${editing.id}`, {
@@ -77,6 +88,14 @@ export default function Workouts() {
     } catch {
       setError("Update failed");
     }
+  };
+
+  // =========================
+  // OPEN SCHEDULE MODAL
+  // =========================
+  const openSchedule = (w) => {
+    setSelectedWorkout(w);
+    setScheduleOpen(true);
   };
 
   return (
@@ -141,17 +160,22 @@ export default function Workouts() {
               <p className="muted">{w.description}</p>
 
               <div className="actions">
-                {user.role === "TRAINER" ? (
+                {/* ALL USERS CAN SCHEDULE */}
+                <button className="btn primary" onClick={() => openSchedule(w)}>
+                  Schedule
+                </button>
+
+                {/* TRAINER EXTRA ACTIONS */}
+                {user.role === "TRAINER" && (
                   <>
                     <button className="btn ghost" onClick={() => openEdit(w)}>
                       Manage
                     </button>
+
                     <button className="btn danger" onClick={() => remove(w.id)}>
                       Delete
                     </button>
                   </>
-                ) : (
-                  <button className="btn primary">Join</button>
                 )}
               </div>
             </div>
@@ -159,7 +183,9 @@ export default function Workouts() {
         </div>
       )}
 
-      {/* MODAL */}
+      {/* =========================
+          EDIT MODAL
+      ========================= */}
       {editing && (
         <div className="modal">
           <div className="modal-content">
@@ -176,6 +202,7 @@ export default function Workouts() {
               <button className="btn ghost" onClick={() => setEditing(null)}>
                 Cancel
               </button>
+
               <button className="btn primary" onClick={saveEdit}>
                 Save
               </button>
@@ -183,6 +210,16 @@ export default function Workouts() {
           </div>
         </div>
       )}
+
+      {/* =========================
+          SCHEDULE MODAL
+      ========================= */}
+      <ScheduleModal
+        open={scheduleOpen}
+        onClose={() => setScheduleOpen(false)}
+        workout={selectedWorkout}
+        user={user}
+      />
     </div>
   );
 }

@@ -1,203 +1,124 @@
-/* =========================
-   PAGE WRAPPER
-========================= */
-
-.my-workouts-page {
+.my-page {
   width: 100%;
-  max-width: 900px;
-  margin: 0 auto;
-
-  color: var(--text);
+  padding: 20px 0;
 }
 
-/* =========================
-   HEADER
-========================= */
-
-.my-workouts-header {
-  margin-bottom: 40px;
-}
-
-.my-workouts-header h1 {
-  font-size: 36px;
+/* HEADER */
+.my-header h1 {
+  font-size: 28px;
   font-weight: 700;
-  letter-spacing: -0.5px;
-
-  color: var(--text);
 }
 
-.my-workouts-header p {
-  font-size: 15px;
-  margin-top: 6px;
-  color: var(--muted);
+/* WEEK */
+.week-bar {
+  display: flex;
+  justify-content: space-between;
+  margin: 20px 0;
+  max-width: 520px;
 }
 
-/* =========================
-   TIMELINE WRAPPER
-========================= */
-
-.timeline-wrapper {
-  position: relative;
-}
-
-/* vertical line */
-.timeline-line {
-  position: absolute;
-  left: 20px;
-  top: 0;
-  bottom: 0;
-  width: 2px;
-
-  background: var(--border);
-}
-
-/* list */
+/* TIMELINE */
 .timeline-list {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 12px;
 }
 
-/* =========================
-   ITEM
-========================= */
-
+/* ITEM */
 .timeline-item {
-  position: relative;
-  padding-left: 64px;
+  display: flex;
+  gap: 12px;
 }
 
-/* =========================
-   ICON
-========================= */
-
+/* ICON */
 .timeline-icon {
-  position: absolute;
-  left: 0;
-  top: 4px;
-
-  width: 42px;
-  height: 42px;
-
-  border-radius: 14px;
-
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-
-  backdrop-filter: blur(14px);
-
   border: 1px solid var(--border);
 }
 
-/* COMPLETED */
-.completed-icon {
-  background: rgba(139, 92, 246, 0.15);
-  color: var(--primary);
-  border-color: rgba(139, 92, 246, 0.25);
-}
-
-/* UPCOMING */
-.upcoming-icon {
-  background: rgba(255, 255, 255, 0.03);
-  color: var(--muted);
-}
-
-/* =========================
-   CARD
-========================= */
-
+/* CARD */
 .timeline-card {
-  background: var(--card);
+  flex: 1;
+  padding: 12px;
+  border-radius: 14px;
   border: 1px solid var(--border);
-
-  backdrop-filter: blur(16px);
-
-  border-radius: var(--radius);
-
-  padding: 22px;
-
-  transition: all 0.2s ease;
-
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  background: rgba(20, 20, 30, 0.6);
 }
 
-.timeline-card:hover {
-  transform: translateY(-3px);
-
-  border-color: rgba(139, 92, 246, 0.35);
-  box-shadow: var(--shadow);
-}
-
-/* =========================
-   TOP ROW
-========================= */
-
-.timeline-card-top {
+.timeline-top {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  gap: 20px;
 }
 
-/* =========================
-   TEXT
-========================= */
-
-.timeline-card h3 {
-  font-size: 17px;
-  font-weight: 600;
-  color: var(--text);
-}
-
-.timeline-card p {
+/* WORKOUT TEXT */
+.workout-item {
   font-size: 13px;
-  color: var(--muted);
+  opacity: 0.85;
   margin-top: 4px;
 }
 
-/* =========================
-   STATUS
-========================= */
-
-.timeline-status {
-  padding: 7px 14px;
-  border-radius: 999px;
-
+/* STATUS */
+.status {
   font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-
+  padding: 4px 8px;
+  border-radius: 999px;
   border: 1px solid var(--border);
 }
 
-/* COMPLETED */
-.timeline-status-completed {
-  background: rgba(139, 92, 246, 0.12);
-  color: var(--primary);
-  border-color: rgba(139, 92, 246, 0.25);
+/* ACTIONS RIGHT */
+.actions-right {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
 }
 
-/* UPCOMING */
-.timeline-status-upcoming {
-  background: rgba(255, 255, 255, 0.03);
-  color: var(--muted);
-  border-color: var(--border);
+/* ROW PER WORKOUT */
+.action-row {
+  display: flex;
+  gap: 6px;
+  margin-left: auto;
 }
 
-/* =========================
-   RESPONSIVE
-========================= */
+/* BUTTONS */
+.btn-mini {
+  font-size: 11px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.2s;
+  border: 1px solid transparent;
+}
 
-@media (max-width: 768px) {
-  .my-workouts-header h1 {
-    font-size: 28px;
-  }
+/* COMPLETE */
+.btn-mini.complete {
+  background: transparent;
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.5);
+}
 
-  .timeline-card-top {
-    flex-direction: column;
-    align-items: flex-start;
-  }
+.btn-mini.complete:hover {
+  background: #22c55e;
+  color: black;
+}
+
+.btn-mini.complete.active {
+  background: #22c55e;
+  color: black;
+}
+
+/* CLEAR */
+.btn-mini.clear {
+  background: transparent;
+  color: #f87171;
+  border: 1px solid rgba(248, 113, 113, 0.5);
+}
+
+.btn-mini.clear:hover {
+  background: #f87171;
+  color: black;
 }
