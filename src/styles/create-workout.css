@@ -1,23 +1,13 @@
-/* =========================
-   PAGE WRAPPER
-========================= */
-
 .create-page {
   width: 100%;
-  display: flex;
-  justify-content: center;
-
-  color: var(--text);
+  animation: fadeUp 0.4s ease;
 }
 
 .create-container {
   width: 100%;
-  max-width: 850px;
+  max-width: 860px;
+  margin: 0 auto;
 }
-
-/* =========================
-   HEADER
-========================= */
 
 .create-header {
   text-align: center;
@@ -27,199 +17,176 @@
 .create-badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-
+  gap: 7px;
   padding: 8px 14px;
   border-radius: 999px;
-
-  border: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.03);
-
-  color: var(--muted);
+  background: rgba(124, 92, 255, 0.14);
+  border: 1px solid rgba(124, 92, 255, 0.28);
+  color: #c4b5fd;
   font-size: 12px;
-
+  font-weight: 600;
   margin-bottom: 18px;
 }
 
-.create-badge svg {
-  color: var(--primary);
-}
-
 .create-header h1 {
-  margin: 0;
   font-size: 42px;
   font-weight: 700;
-  letter-spacing: -0.6px;
-
-  color: var(--text);
+  color: white;
+  margin-bottom: 10px;
+  letter-spacing: -0.7px;
 }
 
 .create-header p {
-  margin-top: 10px;
-  color: var(--muted);
+  color: rgba(255, 255, 255, 0.6);
   font-size: 15px;
 }
 
-/* =========================
-   CARD
-========================= */
-
 .create-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-
+  background: rgba(20, 20, 30, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(18px);
-
-  border-radius: var(--radius);
-
-  padding: 36px;
-
-  box-shadow: var(--shadow);
-
+  border-radius: 28px;
+  padding: 34px;
+  box-shadow: 0 10px 40px rgba(124, 92, 255, 0.12);
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 22px;
 }
 
-/* =========================
-   FORM
-========================= */
+.cw-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
 
 .cw-group {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 9px;
 }
 
 .cw-group label {
-  color: var(--muted);
-  font-size: 14px;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 13px;
+  font-weight: 600;
 }
 
-/* inputs */
 .cw-group input,
-.cw-group textarea {
+.cw-group textarea,
+.cw-group select {
   width: 100%;
-
-  border: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.03);
-
+  padding: 13px 15px;
   border-radius: 16px;
-
-  color: var(--text);
-
-  padding: 16px;
-
-  font-size: 15px;
-
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+  font-size: 14px;
   outline: none;
-
-  transition: 0.2s ease;
+  transition: 0.2s;
 }
 
 .cw-group input {
-  height: 54px;
+  height: 52px;
 }
 
 .cw-group textarea {
+  min-height: 130px;
   resize: vertical;
-  min-height: 120px;
+  line-height: 1.5;
 }
 
-/* focus */
+.cw-group select {
+  height: 52px;
+  appearance: none;
+  cursor: pointer;
+}
+
+.cw-group select option {
+  background: #18181b;
+  color: white;
+}
+
+.cw-group input::placeholder,
+.cw-group textarea::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+
 .cw-group input:focus,
-.cw-group textarea:focus {
+.cw-group textarea:focus,
+.cw-group select:focus {
   border-color: rgba(139, 92, 246, 0.5);
-  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.13);
+  background: rgba(255, 255, 255, 0.07);
 }
 
-/* =========================
-   TAGS SELECTED
-========================= */
-
-.selected-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+.cw-error {
+  color: #f87171;
+  font-size: 14px;
+  padding: 11px 14px;
+  border-radius: 14px;
+  background: rgba(248, 113, 113, 0.08);
+  border: 1px solid rgba(248, 113, 113, 0.18);
 }
-
-.selected-tag {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-
-  background: rgba(139, 92, 246, 0.12);
-  border: 1px solid rgba(139, 92, 246, 0.25);
-
-  color: var(--primary);
-
-  border-radius: 999px;
-
-  padding: 8px 12px;
-
-  font-size: 13px;
-}
-
-.selected-tag button {
-  border: none;
-  background: transparent;
-  color: inherit;
-  cursor: pointer;
-}
-
-/* =========================
-   TAG SUGGESTIONS
-========================= */
-
-.suggested-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-
-  margin-top: 10px;
-}
-
-.suggested-tag {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-
-  border: 1px solid var(--border);
-
-  border-radius: 999px;
-
-  background: rgba(255, 255, 255, 0.03);
-
-  color: var(--muted);
-
-  padding: 8px 14px;
-
-  cursor: pointer;
-
-  transition: 0.2s ease;
-}
-
-.suggested-tag:hover {
-  background: rgba(255, 255, 255, 0.06);
-  color: var(--text);
-  border-color: rgba(139, 92, 246, 0.25);
-}
-
-/* =========================
-   ACTIONS
-========================= */
 
 .cw-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 14px;
-
-  margin-top: 10px;
+  gap: 12px;
+  margin-top: 8px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-/* =========================
-   RESPONSIVE
-========================= */
+.secondary-btn,
+.submit-btn {
+  height: 42px;
+  padding: 0 20px;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.25s;
+  border: none;
+}
+
+.secondary-btn {
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.secondary-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.submit-btn {
+  background: linear-gradient(135deg, #7c3aed, #8b5cf6);
+  color: white;
+  box-shadow: 0 10px 30px rgba(124, 92, 255, 0.22);
+}
+
+.submit-btn:hover {
+  transform: translateY(-2px);
+  opacity: 0.95;
+}
+
+.submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
 @media (max-width: 768px) {
   .create-header h1 {
@@ -228,6 +195,10 @@
 
   .create-card {
     padding: 24px;
+  }
+
+  .cw-grid {
+    grid-template-columns: 1fr;
   }
 
   .cw-actions {

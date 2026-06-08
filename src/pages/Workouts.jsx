@@ -8,6 +8,16 @@ import api from "../api/axios";
 
 import "../styles/workouts.css";
 
+function formatEnum(value) {
+  if (!value) return "—";
+
+  return value
+    .toLowerCase()
+    .split("_")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
 export default function Workouts() {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
@@ -20,16 +30,13 @@ export default function Workouts() {
   const [editing, setEditing] = useState(null);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [durationMinutes, setDurationMinutes] = useState(45);
+  const [difficulty, setDifficulty] = useState("BEGINNER");
+  const [category, setCategory] = useState("STRENGTH");
 
-  // =========================
-  // SCHEDULE MODAL STATE
-  // =========================
   const [scheduleOpen, setScheduleOpen] = useState(false);
   const [selectedWorkout, setSelectedWorkout] = useState(null);
 
-  // =========================
-  // LOAD WORKOUTS
-  // =========================
   useEffect(() => {
     const fetch = async () => {
       try {
@@ -49,12 +56,11 @@ export default function Workouts() {
   if (!user) return <p className="muted">Please login</p>;
 
   const filtered = workouts.filter((w) =>
-    `${w.name} ${w.description}`.toLowerCase().includes(query.toLowerCase()),
+    `${w.name} ${w.description} ${w.category} ${w.difficulty}`
+      .toLowerCase()
+      .includes(query.toLowerCase()),
   );
 
-  // =========================
-  // DELETE
-  // =========================
   const remove = async (id) => {
     try {
       await api.delete(`/workouts/${id}`);
@@ -64,13 +70,13 @@ export default function Workouts() {
     }
   };
 
-  // =========================
-  // EDIT
-  // =========================
   const openEdit = (w) => {
     setEditing(w);
     setName(w.name);
     setDescription(w.description);
+    setDurationMinutes(w.durationMinutes ?? 45);
+    setDifficulty(w.difficulty ?? "BEGINNER");
+    setCategory(w.category ?? "STRENGTH");
   };
 
   const saveEdit = async () => {
@@ -78,6 +84,9 @@ export default function Workouts() {
       const res = await api.put(`/workouts/${editing.id}`, {
         name,
         description,
+        durationMinutes: Number(durationMinutes),
+        difficulty,
+        category,
       });
 
       setWorkouts((prev) =>
@@ -90,9 +99,6 @@ export default function Workouts() {
     }
   };
 
-  // =========================
-  // OPEN SCHEDULE MODAL
-  // =========================
   const openSchedule = (w) => {
     setSelectedWorkout(w);
     setScheduleOpen(true);
@@ -100,7 +106,6 @@ export default function Workouts() {
 
   return (
     <div className="page">
-      {/* HEADER */}
       <div className="header">
         <div>
           <h1>Workouts</h1>
@@ -122,7 +127,6 @@ export default function Workouts() {
         )}
       </div>
 
-      {/* SEARCH */}
       <div className="search">
         <Search size={16} />
         <input
@@ -134,7 +138,6 @@ export default function Workouts() {
 
       {error && <p className="error">{error}</p>}
 
-      {/* GRID */}
       {loading ? (
         <div className="grid">
           {Array.from({ length: 6 }).map((_, i) => (
@@ -150,7 +153,7 @@ export default function Workouts() {
               <div className="top">
                 <span className="pill">
                   <Clock size={12} />
-                  {w.duration ?? "—"}
+                  {w.durationMinutes ? `${w.durationMinutes} min` : "—"}
                 </span>
 
                 <span className="muted">by {w.trainerName ?? "—"}</span>
@@ -159,13 +162,21 @@ export default function Workouts() {
               <h3>{w.name}</h3>
               <p className="muted">{w.description}</p>
 
+              <div className="tags">
+                <span className="tag category">{formatEnum(w.category)}</span>
+
+                <span
+                  className={`tag difficulty-${String(w.difficulty).toLowerCase()}`}
+                >
+                  {formatEnum(w.difficulty)}
+                </span>
+              </div>
+
               <div className="actions">
-                {/* ALL USERS CAN SCHEDULE */}
                 <button className="btn primary" onClick={() => openSchedule(w)}>
                   Schedule
                 </button>
 
-                {/* TRAINER EXTRA ACTIONS */}
                 {user.role === "TRAINER" && (
                   <>
                     <button className="btn ghost" onClick={() => openEdit(w)}>
@@ -183,9 +194,6 @@ export default function Workouts() {
         </div>
       )}
 
-      {/* =========================
-          EDIT MODAL
-      ========================= */}
       {editing && (
         <div className="modal">
           <div className="modal-content">
@@ -197,6 +205,35 @@ export default function Workouts() {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
+
+            <input
+              type="number"
+              min={5}
+              value={durationMinutes}
+              onChange={(e) => setDurationMinutes(e.target.value)}
+            />
+
+            <select
+              value={difficulty}
+              onChange={(e) => setDifficulty(e.target.value)}
+            >
+              <option value="BEGINNER">BEGINNER</option>
+              <option value="INTERMEDIATE">INTERMEDIATE</option>
+              <option value="ADVANCED">ADVANCED</option>
+            </select>
+
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+            >
+              <option value="STRENGTH">STRENGTH</option>
+              <option value="CARDIO">CARDIO</option>
+              <option value="HYPERTROPHY">HYPERTROPHY</option>
+              <option value="MOBILITY">MOBILITY</option>
+              <option value="CORE">CORE</option>
+              <option value="ENDURANCE">ENDURANCE</option>
+              <option value="POWER">POWER</option>
+            </select>
 
             <div className="modal-actions">
               <button className="btn ghost" onClick={() => setEditing(null)}>
@@ -211,9 +248,6 @@ export default function Workouts() {
         </div>
       )}
 
-      {/* =========================
-          SCHEDULE MODAL
-      ========================= */}
       <ScheduleModal
         open={scheduleOpen}
         onClose={() => setScheduleOpen(false)}

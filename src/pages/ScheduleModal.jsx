@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-import api from "../api/axios";
 import { X } from "lucide-react";
 
+import api from "../api/axios";
 import "../styles/schedule-modal.css";
+
 function formatDate(d) {
   return d.toISOString().split("T")[0];
 }
@@ -13,21 +14,25 @@ function addDays(date, days) {
   return d;
 }
 
+function getTodayDate() {
+  return formatDate(new Date());
+}
+
 export default function ScheduleModal({ open, onClose, workout, user }) {
   const [date, setDate] = useState("");
   const [time, setTime] = useState("18:00");
   const [existing, setExisting] = useState([]);
   const [error, setError] = useState(null);
 
-  // =========================
-  // LOAD EXISTING SCHEDULES
-  // =========================
+  const todayDate = getTodayDate();
+
   useEffect(() => {
-    if (!open) return;
+    if (!open || !user?.id) return;
 
     const fetch = async () => {
       try {
-        const res = await api.get("/user-workouts");
+        setError(null);
+        const res = await api.get(`/user-workouts/user/${user.id}`);
         setExisting(res.data);
       } catch {
         setError("Failed to load schedule");
@@ -35,11 +40,16 @@ export default function ScheduleModal({ open, onClose, workout, user }) {
     };
 
     fetch();
+  }, [open, user?.id]);
+
+  useEffect(() => {
+    if (!open) return;
+
+    setDate("");
+    setTime("18:00");
+    setError(null);
   }, [open]);
 
-  // =========================
-  // CHECK CONFLICT
-  // =========================
   const hasConflict = useMemo(() => {
     if (!date || !time) return false;
 
@@ -48,14 +58,43 @@ export default function ScheduleModal({ open, onClose, workout, user }) {
     return existing.some((w) => w.date === selected);
   }, [date, time, existing]);
 
-  // =========================
-  // SUBMIT
-  // =========================
+  const hasDailyLimit = useMemo(() => {
+    if (!date) return false;
+
+    const count = existing.filter((w) => w.date?.slice(0, 10) === date).length;
+
+    return count >= 2;
+  }, [date, existing]);
+
+  const isPastDateTime = useMemo(() => {
+    if (!date || !time) return false;
+
+    const selectedDateTime = new Date(`${date}T${time}`);
+    const now = new Date();
+
+    return selectedDateTime < now;
+  }, [date, time]);
+
   const handleSave = async () => {
     setError(null);
 
+    if (!date) {
+      setError("Please select a date.");
+      return;
+    }
+
+    if (isPastDateTime) {
+      setError("You cannot schedule a workout in the past.");
+      return;
+    }
+
     if (hasConflict) {
-      setError("You already have a workout at this time!");
+      setError("You already have a workout at this time.");
+      return;
+    }
+
+    if (hasDailyLimit) {
+      setError("You can schedule maximum 2 workouts per day.");
       return;
     }
 
@@ -67,27 +106,23 @@ export default function ScheduleModal({ open, onClose, workout, user }) {
       });
 
       window.dispatchEvent(new Event("user-workouts-updated"));
-
       onClose();
     } catch {
       setError("Failed to schedule workout");
     }
   };
 
-  if (!open) return null;
+  if (!open || !workout) return null;
 
-  // =========================
-  // NEXT 7 DAYS (quick picker)
-  // =========================
   const today = new Date();
   const days = Array.from({ length: 7 }).map((_, i) => addDays(today, i));
 
   return (
     <div className="modal-overlay">
       <div className="modal-box">
-        {/* HEADER */}
         <div className="modal-header">
           <h2>Schedule Workout</h2>
+
           <button className="icon-btn" onClick={onClose}>
             <X size={18} />
           </button>
@@ -95,44 +130,65 @@ export default function ScheduleModal({ open, onClose, workout, user }) {
 
         <p className="muted">{workout.name}</p>
 
-        {/* QUICK DAYS */}
         <div className="days-grid">
-          {days.map((d) => (
-            <button
-              key={d}
-              className={`day-btn ${formatDate(d) === date ? "active" : ""}`}
-              onClick={() => setDate(formatDate(d))}
-            >
-              {d.toDateString().slice(0, 10)}
-            </button>
-          ))}
+          {days.map((d) => {
+            const dayDate = formatDate(d);
+            const occupiedCount = existing.filter(
+              (w) => w.date?.slice(0, 10) === dayDate,
+            ).length;
+
+            return (
+              <button
+                key={dayDate}
+                type="button"
+                className={`day-btn ${dayDate === date ? "active" : ""} ${
+                  occupiedCount >= 2 ? "full" : ""
+                }`}
+                onClick={() => setDate(dayDate)}
+              >
+                <span>{d.toDateString().slice(0, 10)}</span>
+
+                {occupiedCount > 0 && (
+                  <small>{occupiedCount}/2 scheduled</small>
+                )}
+              </button>
+            );
+          })}
         </div>
 
-        {/* DATE INPUT */}
         <input
           type="date"
           value={date}
+          min={todayDate}
           onChange={(e) => setDate(e.target.value)}
         />
 
-        {/* TIME INPUT */}
         <input
           type="time"
           value={time}
           onChange={(e) => setTime(e.target.value)}
         />
 
-        {/* CONFLICT WARNING */}
-        {hasConflict && (
+        {isPastDateTime && (
           <div className="warning">
-            ⚠ You already have a workout at this time
+            You cannot schedule a workout in the past.
           </div>
         )}
 
-        {/* ERROR */}
+        {hasConflict && (
+          <div className="warning">
+            You already have a workout at this time.
+          </div>
+        )}
+
+        {hasDailyLimit && (
+          <div className="warning">
+            You already have 2 workouts scheduled for this day.
+          </div>
+        )}
+
         {error && <div className="error">{error}</div>}
 
-        {/* ACTIONS */}
         <div className="modal-actions">
           <button className="btn ghost" onClick={onClose}>
             Cancel
@@ -140,7 +196,7 @@ export default function ScheduleModal({ open, onClose, workout, user }) {
 
           <button
             className="btn primary"
-            disabled={!date || hasConflict}
+            disabled={!date || hasConflict || hasDailyLimit || isPastDateTime}
             onClick={handleSave}
           >
             Schedule
