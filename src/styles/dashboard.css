@@ -292,6 +292,12 @@
   font-size: 12px;
 }
 
+.dashboard-empty {
+  padding: 22px;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 14px;
+}
+
 @keyframes fadeUp {
   from {
     opacity: 0;

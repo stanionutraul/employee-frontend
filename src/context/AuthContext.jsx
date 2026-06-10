@@ -12,7 +12,7 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   const loadUser = async () => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
 
     if (!token) {
       setUser(null);
@@ -25,7 +25,7 @@ export const AuthProvider = ({ children }) => {
       setUser(res.data);
       // eslint-disable-next-line no-unused-vars
     } catch (err) {
-      localStorage.removeItem("token");
+      sessionStorage.removeItem("token");
       setUser(null);
     } finally {
       setLoading(false);
@@ -37,12 +37,12 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (authResponse) => {
-    localStorage.setItem("token", authResponse.token);
+    sessionStorage.setItem("token", authResponse.token);
     await loadUser(); // 🔥 IMPORTANT
   };
 
   const logout = () => {
-    localStorage.removeItem("token");
+    sessionStorage.removeItem("token");
     setUser(null);
   };
 

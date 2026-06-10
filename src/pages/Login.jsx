@@ -75,10 +75,6 @@ export default function Login() {
               />
             </div>
 
-            <div className="form-group">
-              <label>Continue as</label>
-            </div>
-
             <button type="submit" className="submit-btn" disabled={loading}>
               {loading ? "Signing in..." : "Continue"}
               <ArrowRight size={18} />
