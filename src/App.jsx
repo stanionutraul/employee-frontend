@@ -8,6 +8,8 @@ import Dashboard from "./pages/Dashboard";
 import Workouts from "./pages/Workouts";
 import MyWorkoutsPage from "./pages/MyWorkouts";
 import CreateWorkout from "./pages/CreateWorkout";
+import Profile from "./pages/Profile";
+import WorkoutDetails from "./pages/WorkoutDetails";
 
 import { useAuth } from "./context/AuthContext";
 
@@ -38,6 +40,10 @@ export default function App() {
           <Route path="/workouts" element={<Workouts />} />
 
           <Route path="/my-workouts" element={<MyWorkoutsPage />} />
+
+          <Route path="/profile" element={<Profile />} />
+
+          <Route path="/workouts/:id" element={<WorkoutDetails />} />
 
           <Route
             path="/create-workout"

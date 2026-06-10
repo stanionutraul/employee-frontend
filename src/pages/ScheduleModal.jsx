@@ -165,8 +165,8 @@ export default function ScheduleModal({ open, onClose, workout, user }) {
         </div>
 
         <div className="schedule-fields">
-          <label>
-            Date
+          <label className="field-label">
+            <span>Date</span>
             <input
               type="date"
               value={date}
@@ -175,8 +175,8 @@ export default function ScheduleModal({ open, onClose, workout, user }) {
             />
           </label>
 
-          <label>
-            Time
+          <label className="field-label">
+            <span>Time</span>
             <div className="time-input">
               <Clock size={15} />
               <input

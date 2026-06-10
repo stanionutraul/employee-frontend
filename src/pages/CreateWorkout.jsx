@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Sparkles } from "lucide-react";
+import { Plus, Sparkles, Trash2 } from "lucide-react";
 
 import { useAuth } from "../context/AuthContext";
 import { createWorkout } from "../api/workoutApi";
+import { addWorkoutExercise } from "../api/workoutExerciseApi";
 
 import "../styles/create-workout.css";
 
@@ -19,6 +20,13 @@ const CATEGORIES = [
   "POWER",
 ];
 
+const emptyExercise = {
+  name: "",
+  sets: 3,
+  reps: "8-10",
+  notes: "",
+};
+
 export default function CreateWorkout() {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -28,9 +36,26 @@ export default function CreateWorkout() {
   const [durationMinutes, setDurationMinutes] = useState(45);
   const [difficulty, setDifficulty] = useState("BEGINNER");
   const [category, setCategory] = useState("STRENGTH");
+  const [exercises, setExercises] = useState([{ ...emptyExercise }]);
 
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+
+  const updateExercise = (index, field, value) => {
+    setExercises((prev) =>
+      prev.map((exercise, i) =>
+        i === index ? { ...exercise, [field]: value } : exercise,
+      ),
+    );
+  };
+
+  const addExerciseRow = () => {
+    setExercises((prev) => [...prev, { ...emptyExercise }]);
+  };
+
+  const removeExerciseRow = (index) => {
+    setExercises((prev) => prev.filter((_, i) => i !== index));
+  };
 
   const submit = async (e) => {
     e.preventDefault();
@@ -50,11 +75,18 @@ export default function CreateWorkout() {
       return;
     }
 
+    const validExercises = exercises.filter((exercise) => exercise.name.trim());
+
+    if (validExercises.length === 0) {
+      setError("Add at least one exercise");
+      return;
+    }
+
     try {
       setSubmitting(true);
       setError("");
 
-      await createWorkout({
+      const createdWorkout = await createWorkout({
         name,
         description,
         durationMinutes: Number(durationMinutes),
@@ -63,7 +95,19 @@ export default function CreateWorkout() {
         trainerId: user.id,
       });
 
-      navigate("/workouts");
+      await Promise.all(
+        validExercises.map((exercise, index) =>
+          addWorkoutExercise(createdWorkout.id, {
+            name: exercise.name.trim(),
+            sets: Number(exercise.sets),
+            reps: exercise.reps,
+            notes: exercise.notes,
+            position: index + 1,
+          }),
+        ),
+      );
+
+      navigate(`/workouts/${createdWorkout.id}`);
     } catch (err) {
       console.error(err);
       setError("Failed to create workout");
@@ -82,48 +126,69 @@ export default function CreateWorkout() {
           </div>
 
           <h1>Create a workout</h1>
-          <p>Design a new training session for your members.</p>
+          <p>Design a complete training session for your members.</p>
         </div>
 
         <form className="create-card" onSubmit={submit}>
-          <div className="cw-group">
-            <label>Workout name</label>
-            <input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. Push Day"
-            />
-          </div>
+          <div className="cw-section">
+            <div className="cw-section-title">
+              <h3>Workout details</h3>
+              <p>Short overview shown on workout cards.</p>
+            </div>
 
-          <div className="cw-group">
-            <label>Description</label>
-            <textarea
-              rows={4}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Describe the workout..."
-            />
-          </div>
-
-          <div className="cw-grid">
             <div className="cw-group">
-              <label>Duration</label>
+              <label>Workout name</label>
               <input
-                type="number"
-                min={5}
-                value={durationMinutes}
-                onChange={(e) => setDurationMinutes(e.target.value)}
-                placeholder="45"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="e.g. Push Day"
               />
             </div>
 
             <div className="cw-group">
-              <label>Difficulty</label>
+              <label>Short description</label>
+              <textarea
+                rows={4}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="e.g. Perfect push day if you don't have enough time."
+              />
+            </div>
+
+            <div className="cw-grid">
+              <div className="cw-group">
+                <label>Duration</label>
+                <input
+                  type="number"
+                  min={5}
+                  value={durationMinutes}
+                  onChange={(e) => setDurationMinutes(e.target.value)}
+                  placeholder="45"
+                />
+              </div>
+
+              <div className="cw-group">
+                <label>Difficulty</label>
+                <select
+                  value={difficulty}
+                  onChange={(e) => setDifficulty(e.target.value)}
+                >
+                  {DIFFICULTIES.map((item) => (
+                    <option key={item} value={item}>
+                      {item}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="cw-group">
+              <label>Category</label>
               <select
-                value={difficulty}
-                onChange={(e) => setDifficulty(e.target.value)}
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
               >
-                {DIFFICULTIES.map((item) => (
+                {CATEGORIES.map((item) => (
                   <option key={item} value={item}>
                     {item}
                   </option>
@@ -132,18 +197,89 @@ export default function CreateWorkout() {
             </div>
           </div>
 
-          <div className="cw-group">
-            <label>Category</label>
-            <select
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-            >
-              {CATEGORIES.map((item) => (
-                <option key={item} value={item}>
-                  {item}
-                </option>
+          <div className="cw-section">
+            <div className="cw-section-title with-action">
+              <div>
+                <h3>Exercises</h3>
+                <p>These will appear in the workout details page.</p>
+              </div>
+
+              <button
+                type="button"
+                className="add-exercise-btn"
+                onClick={addExerciseRow}
+              >
+                <Plus size={15} />
+                Add exercise
+              </button>
+            </div>
+
+            <div className="exercise-builder">
+              {exercises.map((exercise, index) => (
+                <div key={index} className="exercise-builder-card">
+                  <div className="exercise-builder-top">
+                    <span>Exercise {index + 1}</span>
+
+                    {exercises.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => removeExerciseRow(index)}
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="cw-group">
+                    <label>Exercise name</label>
+                    <input
+                      value={exercise.name}
+                      onChange={(e) =>
+                        updateExercise(index, "name", e.target.value)
+                      }
+                      placeholder="e.g. Bench Press"
+                    />
+                  </div>
+
+                  <div className="cw-grid">
+                    <div className="cw-group">
+                      <label>Sets</label>
+                      <input
+                        type="number"
+                        min={1}
+                        value={exercise.sets}
+                        onChange={(e) =>
+                          updateExercise(index, "sets", e.target.value)
+                        }
+                      />
+                    </div>
+
+                    <div className="cw-group">
+                      <label>Reps</label>
+                      <input
+                        value={exercise.reps}
+                        onChange={(e) =>
+                          updateExercise(index, "reps", e.target.value)
+                        }
+                        placeholder="8-10"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="cw-group">
+                    <label>Notes</label>
+                    <textarea
+                      rows={3}
+                      value={exercise.notes}
+                      onChange={(e) =>
+                        updateExercise(index, "notes", e.target.value)
+                      }
+                      placeholder="e.g. Progressive overload, controlled negative."
+                    />
+                  </div>
+                </div>
               ))}
-            </select>
+            </div>
           </div>
 
           {error && <p className="cw-error">{error}</p>}

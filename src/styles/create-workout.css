@@ -209,3 +209,138 @@
     width: 100%;
   }
 }
+
+/* =========================
+   SECTIONS
+========================= */
+
+.cw-section {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.cw-section + .cw-section {
+  padding-top: 26px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.cw-section-title {
+  margin-bottom: 2px;
+}
+
+.cw-section-title h3 {
+  color: white;
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.cw-section-title p {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 13px;
+}
+
+.cw-section-title.with-action {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+}
+
+/* =========================
+   EXERCISE BUILDER
+========================= */
+
+.exercise-builder {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.exercise-builder-card {
+  padding: 18px;
+  border-radius: 22px;
+
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.075);
+
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.exercise-builder-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.exercise-builder-top span {
+  color: #c4b5fd;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+}
+
+.exercise-builder-top button {
+  width: 34px;
+  height: 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 12px;
+  border: 1px solid rgba(248, 113, 113, 0.22);
+
+  background: rgba(248, 113, 113, 0.09);
+  color: #f87171;
+
+  cursor: pointer;
+  transition: 0.22s;
+}
+
+.exercise-builder-top button:hover {
+  background: rgba(248, 113, 113, 0.16);
+  transform: translateY(-1px);
+}
+
+.add-exercise-btn {
+  height: 38px;
+  padding: 0 14px;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+
+  border-radius: 14px;
+  border: 1px solid rgba(139, 92, 246, 0.28);
+
+  background: rgba(124, 92, 255, 0.13);
+  color: #c4b5fd;
+
+  font-size: 13px;
+  font-weight: 800;
+
+  cursor: pointer;
+  transition: 0.22s;
+  white-space: nowrap;
+}
+
+.add-exercise-btn:hover {
+  background: rgba(124, 92, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 768px) {
+  .cw-section-title.with-action {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .add-exercise-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

@@ -7,6 +7,7 @@ import {
   LogOut,
   Menu,
   X,
+  UserCircle,
 } from "lucide-react";
 
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
@@ -40,6 +41,11 @@ export default function AppShell() {
       label: "My Workouts",
       icon: CalendarCheck,
     },
+    {
+      to: "/profile",
+      label: "Profile",
+      icon: UserCircle,
+    },
 
     ...(user?.role === "TRAINER"
       ? [
@@ -59,7 +65,6 @@ export default function AppShell() {
 
   return (
     <div className="app-shell">
-      {/* SIDEBAR */}
       <aside className="sidebar">
         <div className="brand">
           <div className="brand-icon">
@@ -109,7 +114,6 @@ export default function AppShell() {
         </div>
       </aside>
 
-      {/* MAIN */}
       <div className="main-layout">
         <header className="mobile-header">
           <button

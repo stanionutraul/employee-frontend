@@ -173,20 +173,21 @@ export default function Workouts() {
               </div>
 
               <div className="actions">
+                <button
+                  className="btn ghost"
+                  onClick={() => navigate(`/workouts/${w.id}`)}
+                >
+                  Details
+                </button>
+
                 <button className="btn primary" onClick={() => openSchedule(w)}>
                   Schedule
                 </button>
 
                 {user.role === "TRAINER" && (
-                  <>
-                    <button className="btn ghost" onClick={() => openEdit(w)}>
-                      Manage
-                    </button>
-
-                    <button className="btn danger" onClick={() => remove(w.id)}>
-                      Delete
-                    </button>
-                  </>
+                  <button className="btn ghost" onClick={() => openEdit(w)}>
+                    Manage
+                  </button>
                 )}
               </div>
             </div>
@@ -236,6 +237,16 @@ export default function Workouts() {
             </select>
 
             <div className="modal-actions">
+              <button
+                className="btn danger"
+                onClick={() => {
+                  remove(editing.id);
+                  setEditing(null);
+                }}
+              >
+                Delete
+              </button>
+
               <button className="btn ghost" onClick={() => setEditing(null)}>
                 Cancel
               </button>
