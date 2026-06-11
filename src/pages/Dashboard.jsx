@@ -122,7 +122,7 @@ function UserDashboard({ user }) {
         const d = new Date(item.date);
         const diff = d.getTime() - now.getTime();
 
-        return diff >= 0 && diff <= 7 * 24 * 60 * 60 * 1000;
+        return !item.completed && diff >= 0 && diff <= 7 * 24 * 60 * 60 * 1000;
       })
       .sort((a, b) => new Date(a.date) - new Date(b.date));
 
@@ -171,7 +171,7 @@ function UserDashboard({ user }) {
         <div className="dashboard-card-header">
           <div>
             <h3>This week</h3>
-            <p>Your next sessions for the coming days.</p>
+            <p>Your next scheduled sessions.</p>
           </div>
         </div>
 

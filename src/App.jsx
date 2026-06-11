@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 
 import AppShell from "./components/AppShell";
 
@@ -28,6 +29,32 @@ function TrainerRoute({ children }) {
 export default function App() {
   return (
     <BrowserRouter>
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 2600,
+          style: {
+            background: "rgba(20, 20, 30, 0.95)",
+            color: "white",
+            border: "1px solid rgba(255, 255, 255, 0.08)",
+            borderRadius: "16px",
+            backdropFilter: "blur(18px)",
+          },
+          success: {
+            iconTheme: {
+              primary: "#22c55e",
+              secondary: "#0f172a",
+            },
+          },
+          error: {
+            iconTheme: {
+              primary: "#f87171",
+              secondary: "#0f172a",
+            },
+          },
+        }}
+      />
+
       <Routes>
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<Login />} />

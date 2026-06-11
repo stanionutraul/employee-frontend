@@ -5,6 +5,7 @@ import { Plus, Sparkles, Trash2 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { createWorkout } from "../api/workoutApi";
 import { addWorkoutExercise } from "../api/workoutExerciseApi";
+import toast from "react-hot-toast";
 
 import "../styles/create-workout.css";
 
@@ -60,18 +61,15 @@ export default function CreateWorkout() {
   const submit = async (e) => {
     e.preventDefault();
 
-    if (!name.trim()) {
-      setError("Workout name is required");
-      return;
-    }
-
     if (!description.trim()) {
       setError("Workout description is required");
+      toast.error("Workout description is required");
       return;
     }
 
     if (!durationMinutes || Number(durationMinutes) < 5) {
       setError("Duration must be at least 5 minutes");
+      toast.error("Duration must be at least 5 minutes");
       return;
     }
 
@@ -79,6 +77,7 @@ export default function CreateWorkout() {
 
     if (validExercises.length === 0) {
       setError("Add at least one exercise");
+      toast.error("Add at least one exercise");
       return;
     }
 
@@ -107,10 +106,12 @@ export default function CreateWorkout() {
         ),
       );
 
+      toast.success("Workout created successfully");
       navigate(`/workouts/${createdWorkout.id}`);
     } catch (err) {
       console.error(err);
       setError("Failed to create workout");
+      toast.error("Failed to create workout");
     } finally {
       setSubmitting(false);
     }

@@ -3,6 +3,8 @@ import { Shield, User, Mail, Lock, BadgeCheck } from "lucide-react";
 
 import { getProfile, updateProfile, changePassword } from "../api/profileApi";
 
+import toast from "react-hot-toast";
+
 import "../styles/profile.css";
 
 export default function Profile() {
@@ -28,6 +30,7 @@ export default function Profile() {
       setName(data.name);
     } catch {
       setError("Failed to load profile.");
+      toast.error("Failed to load profile");
     } finally {
       setLoading(false);
     }
@@ -49,8 +52,10 @@ export default function Profile() {
 
       setProfile(updated);
       setMessage("Profile updated successfully.");
+      toast.message("Profile updated successfully.");
     } catch {
       setError("Failed to update profile.");
+      toast.error("Failed to load update profile.");
     } finally {
       setSavingProfile(false);
     }

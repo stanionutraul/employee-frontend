@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { CalendarClock, Clock, X } from "lucide-react";
-
+import toast from "react-hot-toast";
 import api from "../api/axios";
 import "../styles/schedule-modal.css";
 
@@ -44,6 +44,7 @@ export default function ScheduleModal({ open, onClose, workout, user }) {
         setExisting(res.data);
       } catch {
         setError("Failed to load schedule.");
+        toast.error("Failed to load schedule");
       }
     };
 
@@ -85,21 +86,25 @@ export default function ScheduleModal({ open, onClose, workout, user }) {
 
     if (!date) {
       setError("Please select a date.");
+      toast.error("Please select a date");
       return;
     }
 
     if (isPastDateTime) {
       setError("You cannot schedule a workout in the past.");
+      toast.error("You cannot schedule in the past");
       return;
     }
 
     if (hasConflict) {
       setError("You already have a workout at this time.");
+      toast.error("You already have a workout at this time");
       return;
     }
 
     if (hasDailyLimit) {
       setError("You can schedule maximum 2 workouts per day.");
+      toast.error("Daily workout limit reached");
       return;
     }
 
@@ -110,10 +115,13 @@ export default function ScheduleModal({ open, onClose, workout, user }) {
         date: `${date}T${time}`,
       });
 
+      toast.success("Workout scheduled successfully");
+
       window.dispatchEvent(new Event("user-workouts-updated"));
       onClose();
     } catch {
       setError("Failed to schedule workout.");
+      toast.error("Failed to schedule workout");
     }
   };
 
