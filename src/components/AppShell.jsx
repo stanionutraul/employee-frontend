@@ -8,6 +8,7 @@ import {
   Menu,
   X,
   UserCircle,
+  Users,
 } from "lucide-react";
 
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
@@ -49,6 +50,11 @@ export default function AppShell() {
 
     ...(user?.role === "TRAINER"
       ? [
+          {
+            to: "/members",
+            label: "Members",
+            icon: Users,
+          },
           {
             to: "/create-workout",
             label: "Create Workout",

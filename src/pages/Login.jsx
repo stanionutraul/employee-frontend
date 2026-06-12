@@ -4,6 +4,7 @@ import { Dumbbell, ArrowRight } from "lucide-react";
 
 import { loginRequest } from "../api/authApi";
 import { useAuth } from "../context/AuthContext";
+import toast from "react-hot-toast";
 
 import "../styles/auth.css";
 
@@ -14,24 +15,35 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-
   const submit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+
+    if (!email.trim()) {
+      toast.error("Email is required");
+      return;
+    }
+
+    if (!password.trim()) {
+      toast.error("Password is required");
+      return;
+    }
 
     try {
+      setLoading(true);
+
       const res = await loginRequest({
         email,
         password,
       });
 
-      console.log("LOGIN RESPONSE:", res);
+      await login(res);
 
-      login(res); // 🔥 SALVEAZĂ TOKEN + /me
+      toast.success("Welcome back");
 
       navigate("/dashboard");
     } catch (err) {
       console.log("LOGIN ERROR:", err);
+      toast.error("Invalid email or password");
     } finally {
       setLoading(false);
     }

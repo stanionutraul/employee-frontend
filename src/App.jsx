@@ -11,7 +11,7 @@ import MyWorkoutsPage from "./pages/MyWorkouts";
 import CreateWorkout from "./pages/CreateWorkout";
 import Profile from "./pages/Profile";
 import WorkoutDetails from "./pages/WorkoutDetails";
-
+import Members from "./pages/Members";
 import { useAuth } from "./context/AuthContext";
 
 function TrainerRoute({ children }) {
@@ -71,6 +71,15 @@ export default function App() {
           <Route path="/profile" element={<Profile />} />
 
           <Route path="/workouts/:id" element={<WorkoutDetails />} />
+
+          <Route
+            path="/members"
+            element={
+              <TrainerRoute>
+                <Members />
+              </TrainerRoute>
+            }
+          />
 
           <Route
             path="/create-workout"

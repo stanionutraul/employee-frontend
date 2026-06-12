@@ -43,6 +43,12 @@ export default function Profile() {
   const saveProfile = async (e) => {
     e.preventDefault();
 
+    if (!name.trim()) {
+      setError("Name is required.");
+      toast.error("Name is required");
+      return;
+    }
+
     try {
       setSavingProfile(true);
       setError("");
@@ -52,10 +58,10 @@ export default function Profile() {
 
       setProfile(updated);
       setMessage("Profile updated successfully.");
-      toast.message("Profile updated successfully.");
+      toast.success("Profile updated successfully");
     } catch {
       setError("Failed to update profile.");
-      toast.error("Failed to load update profile.");
+      toast.error("Failed to update profile");
     } finally {
       setSavingProfile(false);
     }
@@ -63,6 +69,24 @@ export default function Profile() {
 
   const savePassword = async (e) => {
     e.preventDefault();
+
+    if (!currentPassword.trim()) {
+      setError("Current password is required.");
+      toast.error("Current password is required");
+      return;
+    }
+
+    if (!newPassword.trim()) {
+      setError("New password is required.");
+      toast.error("New password is required");
+      return;
+    }
+
+    if (newPassword.length < 4) {
+      setError("New password must be at least 4 characters.");
+      toast.error("Password must be at least 4 characters");
+      return;
+    }
 
     try {
       setSavingPassword(true);
@@ -77,8 +101,10 @@ export default function Profile() {
       setCurrentPassword("");
       setNewPassword("");
       setMessage("Password changed successfully.");
+      toast.success("Password changed successfully");
     } catch {
       setError("Current password is incorrect.");
+      toast.error("Current password is incorrect");
     } finally {
       setSavingPassword(false);
     }

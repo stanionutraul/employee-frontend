@@ -5,6 +5,7 @@ import { Clock, Search, Plus } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import ScheduleModal from "./ScheduleModal";
 import api from "../api/axios";
+import toast from "react-hot-toast";
 
 import "../styles/workouts.css";
 
@@ -44,6 +45,7 @@ export default function Workouts() {
         setWorkouts(res.data);
       } catch {
         setError("Failed to load workouts");
+        toast.error("Failed to load workouts");
       } finally {
         setLoading(false);
       }
@@ -64,9 +66,13 @@ export default function Workouts() {
   const remove = async (id) => {
     try {
       await api.delete(`/workouts/${id}`);
-      setWorkouts((p) => p.filter((w) => w.id !== id));
+
+      setWorkouts((prev) => prev.filter((w) => w.id !== id));
+
+      toast.success("Workout archived successfully");
     } catch {
       setError("Delete failed");
+      toast.error("Failed to archive workout");
     }
   };
 
@@ -80,6 +86,24 @@ export default function Workouts() {
   };
 
   const saveEdit = async () => {
+    if (!name.trim()) {
+      setError("Workout name is required");
+      toast.error("Workout name is required");
+      return;
+    }
+
+    if (!description.trim()) {
+      setError("Workout description is required");
+      toast.error("Workout description is required");
+      return;
+    }
+
+    if (!durationMinutes || Number(durationMinutes) < 5) {
+      setError("Duration must be at least 5 minutes");
+      toast.error("Duration must be at least 5 minutes");
+      return;
+    }
+
     try {
       const res = await api.put(`/workouts/${editing.id}`, {
         name,
@@ -93,9 +117,12 @@ export default function Workouts() {
         prev.map((w) => (w.id === editing.id ? res.data : w)),
       );
 
+      toast.success("Workout updated successfully");
+
       setEditing(null);
     } catch {
       setError("Update failed");
+      toast.error("Failed to update workout");
     }
   };
 
@@ -184,7 +211,7 @@ export default function Workouts() {
                   Schedule
                 </button>
 
-                {user.role === "TRAINER" && (
+                {user.role === "TRAINER" && w.trainerId === user.id && (
                   <button className="btn ghost" onClick={() => openEdit(w)}>
                     Manage
                   </button>

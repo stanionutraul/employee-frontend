@@ -10,6 +10,8 @@ import {
   Check,
 } from "lucide-react";
 
+import toast from "react-hot-toast";
+
 import { registerRequest } from "../api/authApi";
 
 import "../styles/auth.css";
@@ -28,6 +30,35 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const goNext = () => {
+    if (!name.trim()) {
+      setError("Full name is required");
+      toast.error("Full name is required");
+      return;
+    }
+
+    if (!email.trim()) {
+      setError("Email is required");
+      toast.error("Email is required");
+      return;
+    }
+
+    if (!password.trim()) {
+      setError("Password is required");
+      toast.error("Password is required");
+      return;
+    }
+
+    if (password.length < 4) {
+      setError("Password must be at least 4 characters");
+      toast.error("Password must be at least 4 characters");
+      return;
+    }
+
+    setError("");
+    setStep(2);
+  };
+
   const finish = async () => {
     try {
       setLoading(true);
@@ -40,10 +71,12 @@ export default function Register() {
         role,
       });
 
+      toast.success("Account created successfully");
       navigate("/login");
     } catch (err) {
       console.error(err);
       setError("Failed to create account");
+      toast.error("Failed to create account");
     } finally {
       setLoading(false);
     }
@@ -123,7 +156,7 @@ export default function Register() {
                 />
               </div>
 
-              <button className="submit-btn" onClick={() => setStep(2)}>
+              <button className="submit-btn" onClick={goNext}>
                 Continue
                 <ArrowRight size={18} />
               </button>
