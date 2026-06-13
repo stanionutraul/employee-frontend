@@ -8,11 +8,13 @@ import {
   User,
   Award,
   Check,
+  MailCheck,
+  RefreshCw,
 } from "lucide-react";
 
 import toast from "react-hot-toast";
 
-import { registerRequest } from "../api/authApi";
+import { registerRequest, resendVerificationRequest } from "../api/authApi";
 
 import "../styles/auth.css";
 
@@ -28,7 +30,10 @@ export default function Register() {
   const [role, setRole] = useState("USER");
 
   const [loading, setLoading] = useState(false);
+  const [resending, setResending] = useState(false);
+
   const [error, setError] = useState("");
+  const [registeredEmail, setRegisteredEmail] = useState("");
 
   const goNext = () => {
     if (!name.trim()) {
@@ -71,8 +76,8 @@ export default function Register() {
         role,
       });
 
-      toast.success("Account created successfully");
-      navigate("/login");
+      setRegisteredEmail(email);
+      toast.success("Verification email sent");
     } catch (err) {
       console.error(err);
       setError("Failed to create account");
@@ -81,6 +86,76 @@ export default function Register() {
       setLoading(false);
     }
   };
+
+  const resendVerification = async () => {
+    try {
+      setResending(true);
+      setError("");
+
+      await resendVerificationRequest(registeredEmail);
+
+      toast.success("Verification email resent");
+    } catch (err) {
+      console.error(err);
+      setError("Failed to resend verification email");
+      toast.error("Failed to resend verification email");
+    } finally {
+      setResending(false);
+    }
+  };
+
+  if (registeredEmail) {
+    return (
+      <div className="auth-page">
+        <div className="auth-glow auth-glow-1"></div>
+        <div className="auth-glow auth-glow-2"></div>
+
+        <div className="auth-wrapper">
+          <div className="auth-logo">
+            <div className="auth-logo-icon">
+              <Dumbbell size={20} />
+            </div>
+
+            <span>Nexus Fit</span>
+          </div>
+
+          <div className="auth-card verify-card">
+            <div className="verify-icon">
+              <MailCheck size={42} />
+            </div>
+
+            <div className="auth-header">
+              <h1>Check your email</h1>
+
+              <p>
+                We sent a verification link to{" "}
+                <strong>{registeredEmail}</strong>. Your account will become
+                active after you verify your email.
+              </p>
+            </div>
+
+            {error && <p className="auth-error">{error}</p>}
+
+            <button
+              className="submit-btn verify-login-btn"
+              onClick={resendVerification}
+              disabled={resending}
+            >
+              {resending ? "Resending..." : "Resend verification email"}
+              <RefreshCw size={18} />
+            </button>
+
+            <button
+              className="secondary-btn verify-secondary-btn"
+              onClick={() => navigate("/login")}
+            >
+              Go to login
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="auth-page">
@@ -209,16 +284,7 @@ export default function Register() {
                 </button>
               </div>
 
-              {error && (
-                <p
-                  style={{
-                    color: "red",
-                    marginTop: "12px",
-                  }}
-                >
-                  {error}
-                </p>
-              )}
+              {error && <p className="auth-error">{error}</p>}
 
               <div className="register-actions">
                 <button className="secondary-btn" onClick={() => setStep(1)}>

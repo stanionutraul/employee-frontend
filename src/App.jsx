@@ -13,6 +13,7 @@ import Profile from "./pages/Profile";
 import WorkoutDetails from "./pages/WorkoutDetails";
 import Members from "./pages/Members";
 import { useAuth } from "./context/AuthContext";
+import VerifyEmail from "./pages/VerifyEmail";
 
 function TrainerRoute({ children }) {
   const { user, loading } = useAuth();
@@ -60,6 +61,7 @@ export default function App() {
         <Route path="/login" element={<Login />} />
 
         <Route path="/register" element={<Register />} />
+        <Route path="/verify-email" element={<VerifyEmail />} />
 
         <Route element={<AppShell />}>
           <Route path="/dashboard" element={<Dashboard />} />

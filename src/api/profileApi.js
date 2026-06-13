@@ -13,3 +13,11 @@ export const updateProfile = async (data) => {
 export const changePassword = async (data) => {
   await api.put("/profile/password", data);
 };
+
+export const resetProgress = async () => {
+  await api.delete("/profile/progress");
+};
+
+export const deleteAccount = async () => {
+  await api.delete("/profile/account");
+};

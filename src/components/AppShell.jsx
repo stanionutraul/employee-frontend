@@ -79,7 +79,6 @@ export default function AppShell() {
 
           <div>
             <h2>Nexus Fit</h2>
-            <span>INTELLIGENCE</span>
           </div>
         </div>
 

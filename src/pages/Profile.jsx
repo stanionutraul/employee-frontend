@@ -1,7 +1,24 @@
 import { useEffect, useState } from "react";
-import { Shield, User, Mail, Lock, BadgeCheck } from "lucide-react";
+import {
+  Shield,
+  User,
+  Mail,
+  Lock,
+  BadgeCheck,
+  RotateCcw,
+  Trash2,
+} from "lucide-react";
 
-import { getProfile, updateProfile, changePassword } from "../api/profileApi";
+import {
+  getProfile,
+  updateProfile,
+  changePassword,
+  resetProgress,
+  deleteAccount,
+} from "../api/profileApi";
+
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 import toast from "react-hot-toast";
 
@@ -17,6 +34,12 @@ export default function Profile() {
   const [loading, setLoading] = useState(true);
   const [savingProfile, setSavingProfile] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
+
+  const [resetting, setResetting] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  const { logout } = useAuth();
+  const navigate = useNavigate();
 
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -107,6 +130,62 @@ export default function Profile() {
       toast.error("Current password is incorrect");
     } finally {
       setSavingPassword(false);
+    }
+  };
+
+  const handleResetProgress = async () => {
+    const confirmed = window.confirm(
+      "Are you sure you want to reset all your progress? This will remove all scheduled and completed workouts.",
+    );
+
+    if (!confirmed) return;
+
+    try {
+      setResetting(true);
+      setError("");
+      setMessage("");
+
+      await resetProgress();
+
+      window.dispatchEvent(new Event("user-workouts-updated"));
+
+      setMessage("Progress reset successfully.");
+      toast.success("Progress reset successfully");
+    } catch (err) {
+      console.error(err);
+      setError("Failed to reset progress.");
+      toast.error("Failed to reset progress");
+    } finally {
+      setResetting(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete your account? This action cannot be undone.",
+    );
+
+    if (!confirmed) return;
+
+    try {
+      setDeleting(true);
+      setError("");
+      setMessage("");
+
+      await deleteAccount();
+
+      toast.success("Account deleted successfully");
+
+      logout();
+      navigate("/register");
+    } catch (err) {
+      console.error(err);
+      setError(
+        "Failed to delete account. Trainers with active workouts cannot delete their account yet.",
+      );
+      toast.error("Failed to delete account");
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -206,6 +285,51 @@ export default function Profile() {
             {savingPassword ? "Changing..." : "Change password"}
           </button>
         </form>
+      </div>
+      <div className="profile-card danger-zone-card">
+        <div className="card-title danger-title">
+          <Trash2 size={18} />
+          <div>
+            <h3>Danger zone</h3>
+            <p>Reset your training data or permanently delete your account.</p>
+          </div>
+        </div>
+
+        <div className="danger-action">
+          <div>
+            <h4>Reset progress</h4>
+            <p>
+              Remove all scheduled and completed workouts from your account.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            className="profile-btn warning"
+            onClick={handleResetProgress}
+            disabled={resetting}
+          >
+            <RotateCcw size={15} />
+            {resetting ? "Resetting..." : "Reset progress"}
+          </button>
+        </div>
+
+        <div className="danger-action">
+          <div>
+            <h4>Delete account</h4>
+            <p>Permanently delete your account and verification data.</p>
+          </div>
+
+          <button
+            type="button"
+            className="profile-btn danger"
+            onClick={handleDeleteAccount}
+            disabled={deleting}
+          >
+            <Trash2 size={15} />
+            {deleting ? "Deleting..." : "Delete account"}
+          </button>
+        </div>
       </div>
     </div>
   );

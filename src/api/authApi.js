@@ -14,3 +14,16 @@ export const getMe = async () => {
   const response = await api.get("/auth/me");
   return response.data;
 };
+
+export const verifyEmailRequest = async (token) => {
+  const res = await api.get(`/auth/verify?token=${token}`);
+  return res.data;
+};
+
+export const resendVerificationRequest = async (email) => {
+  const res = await api.post(
+    `/auth/resend-verification?email=${encodeURIComponent(email)}`,
+  );
+
+  return res.data;
+};

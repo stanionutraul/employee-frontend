@@ -217,6 +217,77 @@
   color: #f87171;
 }
 
+.danger-zone-card {
+  grid-column: 1 / -1;
+}
+
+.danger-title svg {
+  color: #f87171;
+}
+
+.danger-action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+
+  padding: 18px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.danger-action h4 {
+  color: white;
+  font-size: 15px;
+  margin-bottom: 4px;
+}
+
+.danger-action p {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.profile-btn.warning {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  background: rgba(251, 191, 36, 0.12);
+  color: #fbbf24;
+  border: 1px solid rgba(251, 191, 36, 0.28);
+}
+
+.profile-btn.warning:hover {
+  background: rgba(251, 191, 36, 0.18);
+}
+
+.profile-btn.danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  background: rgba(248, 113, 113, 0.12);
+  color: #f87171;
+  border: 1px solid rgba(248, 113, 113, 0.28);
+}
+
+.profile-btn.danger:hover {
+  background: rgba(248, 113, 113, 0.18);
+}
+
+@media (max-width: 768px) {
+  .danger-action {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .danger-action button {
+    width: 100%;
+  }
+}
+
 @keyframes fadeUp {
   from {
     opacity: 0;
