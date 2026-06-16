@@ -429,6 +429,13 @@ body {
   animation: spin 0.9s linear infinite;
 }
 
+.password-hint {
+  margin-top: 7px;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
 @keyframes spin {
   to {
     transform: rotate(360deg);
@@ -448,4 +455,79 @@ body {
 .verify-secondary-btn {
   width: 100%;
   margin-top: 10px;
+}
+
+/* Demo Accounts */
+
+.demo-accounts {
+  margin-bottom: 24px;
+
+  border-radius: 18px;
+
+  background: rgba(255, 255, 255, 0.03);
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  padding: 16px;
+}
+
+.demo-header {
+  font-size: 13px;
+  font-weight: 600;
+
+  color: #a78bfa;
+
+  margin-bottom: 12px;
+
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.demo-account {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 10px 0;
+}
+
+.demo-account + .demo-account {
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.demo-account strong {
+  display: block;
+  font-size: 14px;
+}
+
+.demo-account span {
+  display: block;
+
+  color: #94a3b8;
+
+  font-size: 13px;
+
+  margin-top: 3px;
+}
+
+.demo-account button {
+  border: none;
+
+  background: rgba(124, 58, 237, 0.18);
+
+  color: white;
+
+  padding: 8px 14px;
+
+  border-radius: 10px;
+
+  cursor: pointer;
+
+  font-size: 13px;
+
+  transition: 0.2s;
+}
+
+.demo-account button:hover {
+  background: rgba(124, 58, 237, 0.3);
 }

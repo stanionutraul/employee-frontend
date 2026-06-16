@@ -24,6 +24,7 @@
   grid-template-columns: 320px 1fr;
   gap: 18px;
   align-items: start;
+  margin-bottom: 18px;
 }
 
 .profile-card {
@@ -275,6 +276,13 @@
 
 .profile-btn.danger:hover {
   background: rgba(248, 113, 113, 0.18);
+}
+
+.profile-password-hint {
+  margin-top: 7px;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 12px;
+  line-height: 1.5;
 }
 
 @media (max-width: 768px) {

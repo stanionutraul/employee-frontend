@@ -7,6 +7,26 @@ import { resetPasswordRequest } from "../api/authApi";
 
 import "../styles/auth.css";
 
+function validatePassword(value) {
+  if (value.length < 10) {
+    return "Password must be at least 10 characters";
+  }
+
+  if (!/[A-Z]/.test(value)) {
+    return "Password must contain at least one uppercase letter";
+  }
+
+  if (!/[a-z]/.test(value)) {
+    return "Password must contain at least one lowercase letter";
+  }
+
+  if (!/[0-9]/.test(value)) {
+    return "Password must contain at least one number";
+  }
+
+  return "";
+}
+
 export default function ResetPassword() {
   const [searchParams] = useSearchParams();
 
@@ -25,8 +45,10 @@ export default function ResetPassword() {
       return;
     }
 
-    if (password.length < 4) {
-      toast.error("Password must be at least 4 characters");
+    const passwordError = validatePassword(password);
+
+    if (passwordError) {
+      toast.error(passwordError);
       return;
     }
 
@@ -76,6 +98,11 @@ export default function ResetPassword() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
+
+              <p className="password-hint">
+                Minimum 10 characters, one uppercase letter, one lowercase
+                letter and one number.
+              </p>
             </div>
 
             <button type="submit" className="submit-btn" disabled={loading}>

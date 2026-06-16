@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import {
+  AlertCircle,
   CalendarClock,
   CheckCircle2,
   ChevronLeft,
@@ -55,6 +56,7 @@ function formatDate(d) {
 
   return `${year}-${month}-${day}`;
 }
+
 function formatTime(dateStr) {
   if (!dateStr) return "";
 
@@ -93,13 +95,20 @@ function getAccountWeekStart(user) {
   return startOfWeek(new Date(user.createdAt));
 }
 
+function getStatus(item) {
+  if (item.status) return item.status;
+  return item.completed ? "COMPLETED" : "SCHEDULED";
+}
+
 export default function MyWorkoutsPage() {
   const { user } = useAuth();
 
   const [data, setData] = useState([]);
+  const [pendingReview, setPendingReview] = useState([]);
   const [activeTab, setActiveTab] = useState("weekly");
   const [weekStart, setWeekStart] = useState(startOfWeek(new Date()));
   const [loading, setLoading] = useState(true);
+  const [reviewLoading, setReviewLoading] = useState(false);
   const [error, setError] = useState("");
 
   const accountWeekStart = useMemo(() => {
@@ -126,6 +135,19 @@ export default function MyWorkoutsPage() {
     }
   };
 
+  const fetchPendingReview = async () => {
+    if (!user?.id) return;
+
+    try {
+      const res = await api.get(
+        `/user-workouts/user/${user.id}/pending-review`,
+      );
+      setPendingReview(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   useEffect(() => {
     if (!user?.id) return;
 
@@ -140,8 +162,13 @@ export default function MyWorkoutsPage() {
     });
 
     fetchWorkouts();
+    fetchPendingReview();
 
-    const handler = () => fetchWorkouts();
+    const handler = () => {
+      fetchWorkouts();
+      fetchPendingReview();
+    };
+
     window.addEventListener("user-workouts-updated", handler);
 
     return () => {
@@ -151,11 +178,16 @@ export default function MyWorkoutsPage() {
 
   const markCompleted = async (id) => {
     try {
-      await api.put(`/user-workouts/${id}/complete`);
+      const res = await api.put(`/user-workouts/${id}/complete`);
 
       setData((prev) =>
-        prev.map((w) => (w.id === id ? { ...w, completed: true } : w)),
+        prev.map((w) =>
+          w.id === id ? { ...w, ...res.data, completed: true } : w,
+        ),
       );
+
+      setPendingReview((prev) => prev.filter((w) => w.id !== id));
+
       toast.success("Workout completed");
 
       window.dispatchEvent(new Event("user-workouts-updated"));
@@ -166,18 +198,41 @@ export default function MyWorkoutsPage() {
     }
   };
 
+  const markMissed = async (id) => {
+    try {
+      setReviewLoading(true);
+
+      const res = await api.put(`/user-workouts/${id}/missed`);
+
+      setData((prev) => prev.map((w) => (w.id === id ? res.data : w)));
+
+      setPendingReview((prev) => prev.filter((w) => w.id !== id));
+
+      toast.success("Workout marked as missed");
+
+      window.dispatchEvent(new Event("user-workouts-updated"));
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to mark workout as missed");
+    } finally {
+      setReviewLoading(false);
+    }
+  };
+
   const clearWorkout = async (id) => {
     try {
       await api.delete(`/user-workouts/${id}`);
 
       setData((prev) => prev.filter((w) => w.id !== id));
+      setPendingReview((prev) => prev.filter((w) => w.id !== id));
+
       toast.success("Workout removed");
 
       window.dispatchEvent(new Event("user-workouts-updated"));
     } catch (err) {
       console.error(err);
       setError("Failed to clear workout.");
-      toast.success("Workout removed");
+      toast.error("Failed to clear workout");
     }
   };
 
@@ -204,13 +259,16 @@ export default function MyWorkoutsPage() {
 
     if (activeTab === "upcoming") {
       return data
-        .filter((item) => !item.completed && new Date(item.date) >= now)
+        .filter(
+          (item) =>
+            getStatus(item) === "SCHEDULED" && new Date(item.date) >= now,
+        )
         .sort((a, b) => new Date(a.date) - new Date(b.date));
     }
 
     if (activeTab === "completed") {
       return data
-        .filter((item) => item.completed)
+        .filter((item) => getStatus(item) === "COMPLETED")
         .sort((a, b) => new Date(b.date) - new Date(a.date));
     }
 
@@ -243,6 +301,53 @@ export default function MyWorkoutsPage() {
 
   return (
     <div className="my-page">
+      {pendingReview.length > 0 && (
+        <div className="review-overlay">
+          <div className="review-modal">
+            <div className="review-icon">
+              <AlertCircle size={24} />
+            </div>
+
+            <h2>Workout review</h2>
+
+            <p>
+              You have {pendingReview.length} past workout
+              {pendingReview.length > 1 ? "s" : ""} waiting for review. Did you
+              complete {pendingReview.length > 1 ? "them" : "it"}?
+            </p>
+
+            <div className="review-list">
+              {pendingReview.map((item) => (
+                <div key={item.id} className="review-item">
+                  <div>
+                    <h4>{item.workoutName}</h4>
+                    <span>{formatDateTime(item.date)}</span>
+                  </div>
+
+                  <div className="review-actions">
+                    <button
+                      className="mini-btn complete"
+                      disabled={reviewLoading}
+                      onClick={() => markCompleted(item.id)}
+                    >
+                      Completed
+                    </button>
+
+                    <button
+                      className="mini-btn missed"
+                      disabled={reviewLoading}
+                      onClick={() => markMissed(item.id)}
+                    >
+                      Missed
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="my-header">
         <div>
           <h1>My Workouts</h1>
@@ -303,7 +408,8 @@ export default function MyWorkoutsPage() {
               {weekDays.map((d, index) => {
                 const hasWorkouts = d.workouts.length > 0;
                 const allCompleted =
-                  hasWorkouts && d.workouts.every((w) => w.completed);
+                  hasWorkouts &&
+                  d.workouts.every((w) => getStatus(w) === "COMPLETED");
 
                 return (
                   <li key={index} className="timeline-item">
@@ -339,35 +445,49 @@ export default function MyWorkoutsPage() {
 
                       {hasWorkouts && (
                         <div className="workout-list">
-                          {d.workouts.map((w) => (
-                            <div key={w.id} className="workout-row">
-                              <div className="workout-info">
-                                <h4>{w.workoutName}</h4>
-                                <span>{formatTime(w.date)}</span>
-                              </div>
+                          {d.workouts.map((w) => {
+                            const status = getStatus(w);
 
-                              <div className="workout-actions">
-                                <button
-                                  className={`mini-btn complete ${
-                                    w.completed ? "active" : ""
-                                  }`}
-                                  onClick={() => markCompleted(w.id)}
-                                  disabled={w.completed}
-                                >
-                                  {w.completed ? "Completed" : "Complete"}
-                                </button>
+                            return (
+                              <div key={w.id} className="workout-row">
+                                <div className="workout-info">
+                                  <h4>{w.workoutName}</h4>
+                                  <span>{formatTime(w.date)}</span>
+                                </div>
 
-                                {!w.completed && (
-                                  <button
-                                    className="mini-btn clear"
-                                    onClick={() => clearWorkout(w.id)}
-                                  >
-                                    Clear
-                                  </button>
-                                )}
+                                <div className="workout-actions">
+                                  {status === "MISSED" && (
+                                    <span className="mini-status missed">
+                                      Missed
+                                    </span>
+                                  )}
+
+                                  {status !== "MISSED" && (
+                                    <button
+                                      className={`mini-btn complete ${
+                                        status === "COMPLETED" ? "active" : ""
+                                      }`}
+                                      onClick={() => markCompleted(w.id)}
+                                      disabled={status === "COMPLETED"}
+                                    >
+                                      {status === "COMPLETED"
+                                        ? "Completed"
+                                        : "Complete"}
+                                    </button>
+                                  )}
+
+                                  {status === "SCHEDULED" && (
+                                    <button
+                                      className="mini-btn clear"
+                                      onClick={() => clearWorkout(w.id)}
+                                    >
+                                      Clear
+                                    </button>
+                                  )}
+                                </div>
                               </div>
-                            </div>
-                          ))}
+                            );
+                          })}
                         </div>
                       )}
                     </div>
@@ -412,48 +532,50 @@ export default function MyWorkoutsPage() {
             </div>
           ) : (
             <div className="history-list">
-              {listItems.map((item) => (
-                <div key={item.id} className="history-item">
-                  <div className="history-icon">
-                    {item.completed ? (
-                      <CheckCircle2 size={16} />
-                    ) : (
-                      <CalendarClock size={16} />
+              {listItems.map((item) => {
+                const status = getStatus(item);
+
+                return (
+                  <div key={item.id} className="history-item">
+                    <div className="history-icon">
+                      {status === "COMPLETED" ? (
+                        <CheckCircle2 size={16} />
+                      ) : (
+                        <CalendarClock size={16} />
+                      )}
+                    </div>
+
+                    <div className="history-info">
+                      <h4>{item.workoutName}</h4>
+                      <span>{formatDateTime(item.date)}</span>
+                    </div>
+
+                    <span className={`history-status ${status.toLowerCase()}`}>
+                      {status === "COMPLETED" && "Completed"}
+                      {status === "SCHEDULED" && "Scheduled"}
+                      {status === "MISSED" && "Missed"}
+                    </span>
+
+                    {status === "SCHEDULED" && (
+                      <div className="history-actions">
+                        <button
+                          className="mini-btn complete"
+                          onClick={() => markCompleted(item.id)}
+                        >
+                          Complete
+                        </button>
+
+                        <button
+                          className="mini-btn clear"
+                          onClick={() => clearWorkout(item.id)}
+                        >
+                          Clear
+                        </button>
+                      </div>
                     )}
                   </div>
-
-                  <div className="history-info">
-                    <h4>{item.workoutName}</h4>
-                    <span>{formatDateTime(item.date)}</span>
-                  </div>
-
-                  <span
-                    className={`history-status ${
-                      item.completed ? "completed" : "scheduled"
-                    }`}
-                  >
-                    {item.completed ? "Completed" : "Scheduled"}
-                  </span>
-
-                  {!item.completed && (
-                    <div className="history-actions">
-                      <button
-                        className="mini-btn complete"
-                        onClick={() => markCompleted(item.id)}
-                      >
-                        Complete
-                      </button>
-
-                      <button
-                        className="mini-btn clear"
-                        onClick={() => clearWorkout(item.id)}
-                      >
-                        Clear
-                      </button>
-                    </div>
-                  )}
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>

@@ -24,6 +24,26 @@ import toast from "react-hot-toast";
 
 import "../styles/profile.css";
 
+function validatePassword(value) {
+  if (value.length < 10) {
+    return "Password must be at least 10 characters";
+  }
+
+  if (!/[A-Z]/.test(value)) {
+    return "Password must contain at least one uppercase letter";
+  }
+
+  if (!/[a-z]/.test(value)) {
+    return "Password must contain at least one lowercase letter";
+  }
+
+  if (!/[0-9]/.test(value)) {
+    return "Password must contain at least one number";
+  }
+
+  return "";
+}
+
 export default function Profile() {
   const [profile, setProfile] = useState(null);
 
@@ -104,10 +124,11 @@ export default function Profile() {
       toast.error("New password is required");
       return;
     }
+    const passwordError = validatePassword(newPassword);
 
-    if (newPassword.length < 4) {
-      setError("New password must be at least 4 characters.");
-      toast.error("Password must be at least 4 characters");
+    if (passwordError) {
+      setError(passwordError);
+      toast.error(passwordError);
       return;
     }
 
@@ -279,6 +300,11 @@ export default function Profile() {
               onChange={(e) => setNewPassword(e.target.value)}
               placeholder="New password"
             />
+
+            <p className="profile-password-hint">
+              Minimum 10 characters, one uppercase letter, one lowercase letter
+              and one number.
+            </p>
           </div>
 
           <button className="profile-btn primary" disabled={savingPassword}>

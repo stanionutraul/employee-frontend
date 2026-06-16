@@ -35,6 +35,26 @@ export default function Register() {
   const [error, setError] = useState("");
   const [registeredEmail, setRegisteredEmail] = useState("");
 
+  function validatePassword(value) {
+    if (value.length < 10) {
+      return "Password must be at least 10 characters";
+    }
+
+    if (!/[A-Z]/.test(value)) {
+      return "Password must contain at least one uppercase letter";
+    }
+
+    if (!/[a-z]/.test(value)) {
+      return "Password must contain at least one lowercase letter";
+    }
+
+    if (!/[0-9]/.test(value)) {
+      return "Password must contain at least one number";
+    }
+
+    return "";
+  }
+
   const goNext = () => {
     if (!name.trim()) {
       setError("Full name is required");
@@ -54,9 +74,11 @@ export default function Register() {
       return;
     }
 
-    if (password.length < 4) {
-      setError("Password must be at least 4 characters");
-      toast.error("Password must be at least 4 characters");
+    const passwordError = validatePassword(password);
+
+    if (passwordError) {
+      setError(passwordError);
+      toast.error(passwordError);
       return;
     }
 
@@ -229,6 +251,11 @@ export default function Register() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                 />
+
+                <p className="password-hint">
+                  Minimum 10 characters, one uppercase letter, one lowercase
+                  letter and one number.
+                </p>
               </div>
 
               <button className="submit-btn" onClick={goNext}>
