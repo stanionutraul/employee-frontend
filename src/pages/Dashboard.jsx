@@ -80,6 +80,8 @@ function UserDashboard({ user }) {
   const [loadingData, setLoadingData] = useState(true);
   const [error, setError] = useState("");
 
+  const navigate = useNavigate();
+
   const fetchDashboard = async () => {
     try {
       setError("");
@@ -182,7 +184,11 @@ function UserDashboard({ user }) {
             </div>
           ) : (
             stats.thisWeek.map((item) => (
-              <div key={item.id} className="workout-item">
+              <div
+                key={item.id}
+                className="workout-item clickable"
+                onClick={() => navigate(`/workouts/${item.workoutId}`)}
+              >
                 <div className="workout-info">
                   <h4>{item.workoutName}</h4>
                   <p>{formatDateTime(item.date)}</p>
@@ -338,7 +344,11 @@ function TrainerDashboard({ user }) {
               <div className="dashboard-empty">No workout activity yet.</div>
             ) : (
               stats.topWorkouts.slice(0, 5).map((workout) => (
-                <div key={workout.id} className="manage-item">
+                <div
+                  key={workout.id}
+                  className="manage-item clickable"
+                  onClick={() => navigate(`/workouts/${workout.id}`)}
+                >
                   <div className="manage-icon">
                     <Activity size={18} />
                   </div>
@@ -368,7 +378,11 @@ function TrainerDashboard({ user }) {
               </div>
             ) : (
               stats.myUpcoming.slice(0, 5).map((item) => (
-                <div key={item.id} className="manage-item">
+                <div
+                  key={item.id}
+                  className="manage-item clickable"
+                  onClick={() => navigate(`/workouts/${item.workoutId}`)}
+                >
                   <div className="manage-icon">
                     <CalendarClock size={18} />
                   </div>

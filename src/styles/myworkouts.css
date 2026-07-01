@@ -704,6 +704,14 @@
   border: 1px solid rgba(248, 113, 113, 0.28);
 }
 
+.clickable {
+  cursor: pointer;
+}
+
+.clickable:hover h4 {
+  color: #a78bfa;
+}
+
 /* =========================
    RESPONSIVE HISTORY
 ========================= */

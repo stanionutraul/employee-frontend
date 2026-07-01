@@ -9,6 +9,7 @@ import {
   ListChecks,
 } from "lucide-react";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 import api from "../api/axios";
 import { useAuth } from "../context/AuthContext";
@@ -103,6 +104,7 @@ function getStatus(item) {
 export default function MyWorkoutsPage() {
   const { user } = useAuth();
 
+  const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [pendingReview, setPendingReview] = useState([]);
   const [activeTab, setActiveTab] = useState("weekly");
@@ -450,7 +452,12 @@ export default function MyWorkoutsPage() {
 
                             return (
                               <div key={w.id} className="workout-row">
-                                <div className="workout-info">
+                                <div
+                                  className="workout-info clickable"
+                                  onClick={() =>
+                                    navigate(`/workouts/${w.workoutId}`)
+                                  }
+                                >
                                   <h4>{w.workoutName}</h4>
                                   <span>{formatTime(w.date)}</span>
                                 </div>
@@ -545,7 +552,10 @@ export default function MyWorkoutsPage() {
                       )}
                     </div>
 
-                    <div className="history-info">
+                    <div
+                      className="history-info clickable"
+                      onClick={() => navigate(`/workouts/${item.workoutId}`)}
+                    >
                       <h4>{item.workoutName}</h4>
                       <span>{formatDateTime(item.date)}</span>
                     </div>

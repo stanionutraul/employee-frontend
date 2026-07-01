@@ -298,6 +298,14 @@
   font-size: 14px;
 }
 
+.clickable {
+  cursor: pointer;
+}
+
+.clickable:hover h4 {
+  color: #a78bfa;
+}
+
 @keyframes fadeUp {
   from {
     opacity: 0;
