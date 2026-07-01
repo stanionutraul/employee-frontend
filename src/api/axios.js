@@ -4,11 +4,26 @@ const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
 });
 
-api.interceptors.request.use((config) => {
-  const token = sessionStorage.getItem("token");
+const publicRoutes = [
+  "/auth/login",
+  "/auth/register",
+  "/auth/verify",
+  "/auth/resend-verification",
+  "/auth/forgot-password",
+  "/auth/reset-password",
+];
 
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+api.interceptors.request.use((config) => {
+  const isPublicRoute = publicRoutes.some((route) =>
+    config.url?.startsWith(route),
+  );
+
+  if (!isPublicRoute) {
+    const token = sessionStorage.getItem("token");
+
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
   }
 
   return config;
