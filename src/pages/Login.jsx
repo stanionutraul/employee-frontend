@@ -76,6 +76,36 @@ export default function Login() {
             <p>Sign in to your fitness intelligence dashboard.</p>
           </div>
 
+          <div className="demo-accounts">
+            <div className="demo-header">Try the application instantly</div>
+
+            <div
+              className="demo-card"
+              onClick={() => {
+                setEmail("alex.trainer@nexusfit.com");
+                setPassword("Password123");
+              }}
+            >
+              <div>
+                <strong>Trainer Demo</strong>
+                <span>alex.trainer@nexusfit.com</span>
+              </div>
+            </div>
+
+            <div
+              className="demo-card"
+              onClick={() => {
+                setEmail("demo.user@nexusfit.com");
+                setPassword("Password123");
+              }}
+            >
+              <div>
+                <strong>User Demo</strong>
+                <span>demo.user@nexusfit.com</span>
+              </div>
+            </div>
+          </div>
+
           <form onSubmit={submit} className="auth-form">
             <div className="form-group">
               <label>Email</label>
