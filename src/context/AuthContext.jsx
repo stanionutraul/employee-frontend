@@ -37,8 +37,6 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (authResponse) => {
-    console.log("AUTH RESPONSE:", authResponse);
-
     const token = authResponse?.token;
 
     if (!token) {
