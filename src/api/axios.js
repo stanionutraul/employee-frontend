@@ -21,6 +21,9 @@ api.interceptors.request.use((config) => {
   if (!isPublicRoute) {
     const token = sessionStorage.getItem("token");
 
+    console.log("REQUEST URL:", config.url);
+    console.log("TOKEN SENT:", token);
+
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
