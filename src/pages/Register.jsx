@@ -101,9 +101,19 @@ export default function Register() {
       setRegisteredEmail(email);
       toast.success("Verification email sent");
     } catch (err) {
-      console.error(err);
-      setError("Failed to create account");
-      toast.error("Failed to create account");
+      console.error("REGISTER ERROR:", err);
+      console.error("ERROR STATUS:", err.response?.status);
+      console.error("ERROR DATA:", err.response?.data);
+      console.error("ERROR URL:", err.config?.url);
+      console.error("ERROR BASE URL:", err.config?.baseURL);
+
+      const message =
+        err.response?.data?.message ||
+        err.response?.data ||
+        "Failed to create account";
+
+      setError(message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -121,14 +131,6 @@ export default function Register() {
       console.error(err);
       setError("Failed to resend verification email");
       toast.error("Failed to resend verification email");
-      console.error("ERROR STATUS:", err.response?.status);
-      console.error("ERROR DATA:", err.response?.data);
-      console.error("ERROR URL:", err.config?.url);
-      console.error("ERROR BASE URL:", err.config?.baseURL);
-
-      toast.error(
-        err.response?.data?.message || err.response?.data || "Request failed",
-      );
     } finally {
       setResending(false);
     }
