@@ -37,8 +37,16 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (authResponse) => {
-    sessionStorage.setItem("token", authResponse.token);
-    await loadUser(); // 🔥 IMPORTANT
+    console.log("AUTH RESPONSE:", authResponse);
+
+    const token = authResponse?.token;
+
+    if (!token) {
+      throw new Error("No token received from backend");
+    }
+
+    sessionStorage.setItem("token", token);
+    await loadUser();
   };
 
   const logout = () => {
