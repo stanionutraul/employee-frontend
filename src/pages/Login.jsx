@@ -44,6 +44,14 @@ export default function Login() {
     } catch (err) {
       console.log("LOGIN ERROR:", err);
       toast.error("Invalid email or password");
+      console.error("ERROR STATUS:", err.response?.status);
+      console.error("ERROR DATA:", err.response?.data);
+      console.error("ERROR URL:", err.config?.url);
+      console.error("ERROR BASE URL:", err.config?.baseURL);
+
+      toast.error(
+        err.response?.data?.message || err.response?.data || "Request failed",
+      );
     } finally {
       setLoading(false);
     }
