@@ -44,6 +44,8 @@ export const AuthProvider = ({ children }) => {
     }
 
     sessionStorage.setItem("token", token);
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
     await loadUser();
   };
 
